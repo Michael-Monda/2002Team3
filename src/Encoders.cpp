@@ -1,10 +1,10 @@
 #include <Romi32U4.h>
 #include "Encoders.h"
 
-int count_left = 0;
-int count_right = 0;
-int prev_count_left = 0;
-int prev_count_right = 0;
+int leftCount = 0;
+int rightCount = 0;
+int prevLeftCount = 0;
+int prevRightCount = 0;
 float previous_time = 0;
 uint32_t lastUpdate = 0;
 
@@ -26,23 +26,23 @@ void Encoder::PrintVelocities(void)
 
 int Encoder::ReadEncoderCountLeft(void)
 {
-  return count_left;
+  return leftCount;
 }
 
 int Encoder::ReadEncoderCountRight(void)
 {
-  return count_right;
+  return rightCount;
 }
 
 float Encoder::ReadVelocityLeft(void)
 {
-    float measurement = (C_wheel/N_wheel)*(count_left-prev_count_left)/((float)interval/1000);
+    float measurement = (wheelCircum/revCount)*(leftCount-prevLeftCount)/((float)interval/1000);
     return measurement;
 }
 
 float Encoder::ReadVelocityRight(void)
 {
-    float measurement = (C_wheel/N_wheel)*(count_right-prev_count_right)/((float)interval/1000);
+    float measurement = (wheelCircum/revCount)*(rightCount-prevRightCount)/((float)interval/1000);
     return measurement;
 }
 
@@ -51,10 +51,10 @@ boolean Encoder::UpdateEncoderCounts(void)
   uint32_t now = millis();
   if((now - lastUpdate) >= interval)
   {    
-    prev_count_left = count_left;
-    prev_count_right = count_right;
-    count_left = encoders.getCountsLeft();
-    count_right = encoders.getCountsRight();
+    prevLeftCount = leftCount;
+    prevRightCount = rightCount;
+    leftCount = encoders.getCountsLeft();
+    rightCount = encoders.getCountsRight();
     previous_time = millis();
     lastUpdate = now;
     return 1;

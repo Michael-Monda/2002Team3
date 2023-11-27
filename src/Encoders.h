@@ -5,9 +5,9 @@
 
 class Encoder{
     private:
-        const float N_wheel = 1440.0; //counts per wheel revolution
-        const float R_wheel = 35.0; //radius of wheel in [mm]
-        const float C_wheel = 2*PI*R_wheel; //circumference of wheel
+        const float revCount = 1440.0; //counts per wheel revolution
+        const float wheelRadius = 35.0; //radius of wheel in [mm]
+        const float wheelCircum = 2*PI*wheelRadius; //circumference of wheel
         const unsigned int interval = 50; // time in [ms], how often encoders are being updated
         
     public:

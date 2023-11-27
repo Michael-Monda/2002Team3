@@ -36,7 +36,6 @@ SpeedController intrepid;
 WallFollowingController tarawa;
 Romi32U4Motors saipan;
 
-
 void Behaviors::Init(void)
 {
     leyte.Init();
