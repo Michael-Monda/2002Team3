@@ -24,6 +24,16 @@ void Encoder::PrintVelocities(void)
     Serial.println(ReadVelocityRight());
 }   
 
+int Encoder::ReadEncoderCountLeft(void)
+{
+  return count_left;
+}
+
+int Encoder::ReadEncoderCountRight(void)
+{
+  return count_right;
+}
+
 float Encoder::ReadVelocityLeft(void)
 {
     float measurement = (C_wheel/N_wheel)*(count_left-prev_count_left)/((float)interval/1000);

@@ -12,6 +12,8 @@ class Encoder{
         
     public:
         void Init(void);
+        int ReadEncoderCountLeft(void);
+        int ReadEncoderCountRight(void);
         float ReadVelocityLeft(void); 
         float ReadVelocityRight(void); 
         void PrintVelocities(void);
