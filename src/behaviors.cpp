@@ -1,6 +1,6 @@
 #include <Romi32U4.h>
 #include "Behaviors.h"
-#include "Median_filter.h"
+#include "Algorithms.h"
 #include "IMU.h"
 #include "Speed_controller.h"
 #include "algorithms.h"
@@ -10,9 +10,9 @@ IMU_sensor LSM6;
 Romi32U4ButtonA buttonA;
 
 //median filter
-MedianFilter med_x;
-MedianFilter med_y;
-MedianFilter med_z;
+Algorithm med_x;
+Algorithm med_y;
+Algorithm med_z;
 
 //motor-speed controller
 SpeedController PIcontroller;
@@ -30,9 +30,9 @@ void Behaviors::Init(void)
 boolean Behaviors::DetectCollision(void)
 {
     auto data_acc = LSM6.ReadAcceleration();
-    data[0] = med_x.Filter(data_acc.X)*0.061;
-    data[1] = med_y.Filter(data_acc.Y)*0.061;
-    data[2] = med_z.Filter(data_acc.Z)*0.061;
+    data[0] = med_x.ComplexTypeFilter(data_acc.X)*0.061;
+    data[1] = med_y.ComplexTypeFilter(data_acc.Y)*0.061;
+    data[2] = med_z.ComplexTypeFilter(data_acc.Z)*0.061;
     if((data[0]) < threshold) return 1;
     else return 0;
 }
@@ -40,9 +40,9 @@ boolean Behaviors::DetectCollision(void)
 boolean Behaviors::DetectBeingPickedUp(void)
 {
     auto data_pickup = LSM6.ReadAcceleration();
-    data[0] = (med_x.Filter(data_pickup.X) * 0.061);
-    data[1] = (med_y.Filter(data_pickup.Y) * 0.061);
-    data[2] = (med_z.Filter(data_pickup.Z) * 0.061);
+    data[0] = (med_x.ComplexTypeFilter(data_pickup.X) * 0.061);
+    data[1] = (med_y.ComplexTypeFilter(data_pickup.Y) * 0.061);
+    data[2] = (med_z.ComplexTypeFilter(data_pickup.Z) * 0.061);
     if((abs(data[2])) > threshold_pickup) return 1;     // this returns only if the romi is being lifted.
     else return 0;
 }
@@ -80,19 +80,19 @@ void Behaviors::Run(void)
 
     case DRIVE:
     {
-        
-        Serial.print('\t');
-        Serial.print('\t');
-        Serial.print((med_x.Filter(data_crash.X) * 0.061));
-        Serial.print('\t');
-        Serial.print('\t');
-        Serial.print((med_y.Filter(data_crash.Y) * 0.061));
-        Serial.print('\t');
-        Serial.print('\t');
-        Serial.print((med_z.Filter(data_crash.Z) * 0.061));
-        Serial.print('\t');
-        Serial.print('\t');           
-        Serial.println(millis());
+        // debugging
+        // Serial.print('\t');
+        // Serial.print('\t');
+        // Serial.print((med_x.Filter(data_crash.X) * 0.061));
+        // Serial.print('\t');
+        // Serial.print('\t');
+        // Serial.print((med_y.Filter(data_crash.Y) * 0.061));
+        // Serial.print('\t');
+        // Serial.print('\t');
+        // Serial.print((med_z.Filter(data_crash.Z) * 0.061));
+        // Serial.print('\t');
+        // Serial.print('\t');           
+        // Serial.println(millis());
 
 
         if (buttonA.getSingleDebouncedRelease() || DetectBeingPickedUp() == true) { //transition condition

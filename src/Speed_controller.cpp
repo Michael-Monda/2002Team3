@@ -33,6 +33,7 @@ void SpeedController::Run(float target_velocity_left, float target_velocity_righ
         // Serial.println(MagneticEncoder.ReadVelocityRight());
     }
 }
+
 boolean SpeedController::Turn(int degree, int direction)
 {
     motors.setEfforts(0, 0);
@@ -68,6 +69,21 @@ boolean SpeedController::Curved(int target_velocity_left, int target_velocity_ri
     while ((unsigned long)(millis() - now) <= time*1000){
         Run(target_velocity_left,target_velocity_right);
     }
+    motors.setEfforts(0, 0);
+    return 1;
+}
+
+bool SpeedController::Reverse(int target_velocity, int distance) //in mm/s and cm
+{
+    motors.setEfforts(0, 0);
+    
+    uint32_t duration = 1000*((distance*10)/(float)target_velocity); //in ms
+    unsigned long now = millis();
+
+    while ((unsigned long)(millis() - now) <= duration){
+        Run(-target_velocity,-target_velocity);
+    }
+
     motors.setEfforts(0, 0);
     return 1;
 }
