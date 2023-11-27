@@ -47,14 +47,20 @@ void Behaviors::Init(void)
 }
 
 // this needs to be configured to measure the collision strength from any direction
-// on the plane. running theory is that pythagorean theorem could achieve this.
+// on the plane. running theory is that pythagorean theorem could achieve this, but
+// I'm not sure this works because direction must be maintained so the robot doesn't
+// detect a collision when acvcelerating forward. Easy solutiopn is to make the
+// robot accelerate slowly, but I'm not sure if this is acceptable to prof. Nemitz. 
 boolean Behaviors::DetectCollision(void)
 {
     auto data_acc = leyte.ReadAcceleration();
     data[0] = medAccel_x.ComplexTypeFilter(data_acc.X)*0.061;
     data[1] = medAccel_y.ComplexTypeFilter(data_acc.Y)*0.061;
     data[2] = medAccel_z.ComplexTypeFilter(data_acc.Z)*0.061;
-    if((data[0]) < threshold) return 1;
+
+    // translate the collision into two-dimensional space.
+    auto impactVector = sqrt((data[0] * data[0]) + (data[1] * data[1]));
+    if(data[0] < threshold) return 1;
     else return 0;
 }
 
