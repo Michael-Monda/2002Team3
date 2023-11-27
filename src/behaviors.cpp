@@ -1,22 +1,31 @@
 #include <Romi32U4.h>
+#include "Speed_controller.h"
+#include "Wall_following_controller.h"
+
 #include "Behaviors.h"
 #include "Algorithms.h"
+
 #include "IMU.h"
-#include "Speed_controller.h"
-#include "algorithms.h"
+#include "IR_sensor.h"
+#include "Sonar_sensor.h"
 
 //sensors
 IMU_sensor LSM6;
+IRsensor ranger;
+SonarSensor hornet;
+
 Romi32U4ButtonA buttonA;
 
-//median filter
+// complext data-type median filter
 Algorithm med_x;
 Algorithm med_y;
 Algorithm med_z;
 
 //motor-speed controller
 SpeedController PIcontroller;
+WallFollowingController PDcontroller;
 Romi32U4Motors drivetrain;
+
 
 void Behaviors::Init(void)
 {
@@ -25,6 +34,7 @@ void Behaviors::Init(void)
     med_y.Init();
     med_z.Init();
     PIcontroller.Init();
+    PDcontroller.Init();
 }
 
 boolean Behaviors::DetectCollision(void)
@@ -64,14 +74,7 @@ void Behaviors::Run(void)
         if(buttonA.getSingleDebouncedRelease()) {
             robot_state = DRIVE; 
             PIcontroller.Stop(); //action
-            Serial.println("");
-            Serial.println("");
-            Serial.println("");
-            Serial.println("");
-            Serial.println("");
-            Serial.println("");
-        } 
-        else { //transition condition
+        } else { //transition condition
             robot_state = IDLE; 
             PIcontroller.Stop(); //action 
         }   
@@ -80,21 +83,6 @@ void Behaviors::Run(void)
 
     case DRIVE:
     {
-        // debugging
-        // Serial.print('\t');
-        // Serial.print('\t');
-        // Serial.print((med_x.Filter(data_crash.X) * 0.061));
-        // Serial.print('\t');
-        // Serial.print('\t');
-        // Serial.print((med_y.Filter(data_crash.Y) * 0.061));
-        // Serial.print('\t');
-        // Serial.print('\t');
-        // Serial.print((med_z.Filter(data_crash.Z) * 0.061));
-        // Serial.print('\t');
-        // Serial.print('\t');           
-        // Serial.println(millis());
-
-
         if (buttonA.getSingleDebouncedRelease() || DetectBeingPickedUp() == true) { //transition condition
             robot_state = IDLE;
             PIcontroller.Stop();
@@ -108,6 +96,7 @@ void Behaviors::Run(void)
         else {
             PIcontroller.Run(speed, speed);
         }
+
     break;
     }
 
