@@ -24,6 +24,7 @@ IMU_sensor leyte;
 IRsensor ranger;
 SonarSensor hornet;
 
+// physical object declarations
 Romi32U4ButtonA buttonA;
 
 // complex data-type median filter
