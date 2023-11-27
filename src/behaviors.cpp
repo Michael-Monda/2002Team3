@@ -1,46 +1,55 @@
+// @author RBE2002 Team #3:
+// Michael Monda
+// Samantha Booher
+// Chris Adzima
+// Aditri Thakur
+
+// physical object imports
 #include <Romi32U4.h>
 #include "Speed_controller.h"
 #include "Wall_following_controller.h"
 
+// virtual object imports
 #include "Behaviors.h"
 #include "Algorithms.h"
 #include "Position_estimation.h"
 
+// sensor imports
 #include "IMU.h"
 #include "IR_sensor.h"
 #include "Sonar_sensor.h"
 
-//sensors
-IMU_sensor LSM6;
+// sensor declarations
+IMU_sensor leyte;
 IRsensor ranger;
 SonarSensor hornet;
 
 Romi32U4ButtonA buttonA;
 
-// complext data-type median filter
+// complex data-type median filter
 Algorithm med_x;
 Algorithm med_y;
 Algorithm med_z;
 
-//motor-speed controller
-SpeedController PIcontroller;
-WallFollowingController PDcontroller;
-Romi32U4Motors drivetrain;
+// virtual object declarations
+SpeedController intrepid;
+WallFollowingController tarawa;
+Romi32U4Motors saipan;
 
 
 void Behaviors::Init(void)
 {
-    LSM6.Init();
+    leyte.Init();
     med_x.Init();
     med_y.Init();
     med_z.Init();
-    PIcontroller.Init();
-    PDcontroller.Init();
+    intrepid.Init();
+    tarawa.Init();
 }
 
 boolean Behaviors::DetectCollision(void)
 {
-    auto data_acc = LSM6.ReadAcceleration();
+    auto data_acc = leyte.ReadAcceleration();
     data[0] = med_x.ComplexTypeFilter(data_acc.X)*0.061;
     data[1] = med_y.ComplexTypeFilter(data_acc.Y)*0.061;
     data[2] = med_z.ComplexTypeFilter(data_acc.Z)*0.061;
@@ -50,7 +59,7 @@ boolean Behaviors::DetectCollision(void)
 
 boolean Behaviors::DetectBeingPickedUp(void)
 {
-    auto data_pickup = LSM6.ReadAcceleration();
+    auto data_pickup = leyte.ReadAcceleration();
     data[0] = (med_x.ComplexTypeFilter(data_pickup.X) * 0.061);
     data[1] = (med_y.ComplexTypeFilter(data_pickup.Y) * 0.061);
     data[2] = (med_z.ComplexTypeFilter(data_pickup.Z) * 0.061);
@@ -60,13 +69,13 @@ boolean Behaviors::DetectBeingPickedUp(void)
 
 void Behaviors::Stop(void)
 {
-    PIcontroller.Stop();
+    intrepid.Stop();
 }
 
 // IDLE, DRIVE, REVERSE, TURN
 void Behaviors::Run(void)
 {
-    auto data_crash = LSM6.ReadAcceleration();
+    auto data_crash = leyte.ReadAcceleration();
 
     switch (robot_state)
     {
@@ -74,10 +83,10 @@ void Behaviors::Run(void)
     {
         if(buttonA.getSingleDebouncedRelease()) {
             robot_state = DRIVE; 
-            PIcontroller.Stop(); //action
+            intrepid.Stop(); //action
         } else { //transition condition
             robot_state = IDLE; 
-            PIcontroller.Stop(); //action 
+            intrepid.Stop(); //action 
         }   
     break;
     }
@@ -86,16 +95,16 @@ void Behaviors::Run(void)
     {
         if (buttonA.getSingleDebouncedRelease() || DetectBeingPickedUp() == true) { //transition condition
             robot_state = IDLE;
-            PIcontroller.Stop();
+            intrepid.Stop();
         }
 
         if (DetectCollision()) {
             robot_state = REVERSE;
-            PIcontroller.Stop();
+            intrepid.Stop();
         }
 
         else {
-            PIcontroller.Run(speed, speed);
+            intrepid.Run(speed, speed);
         }
 
     break;
@@ -103,7 +112,7 @@ void Behaviors::Run(void)
 
     case REVERSE:
     {   // back up for 10 centimeters
-        PIcontroller.Reverse(50, 10);
+        intrepid.Reverse(50, 10);
         robot_state = TURN;
         
         //else if (backup condition == true) switch to turn state.
@@ -112,7 +121,7 @@ void Behaviors::Run(void)
 
     case TURN:
     {
-        PIcontroller.Turn(90, false);
+        intrepid.Turn(90, false);
         robot_state = DRIVE;
 
     break;
