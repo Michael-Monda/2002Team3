@@ -27,9 +27,9 @@ SonarSensor hornet;
 Romi32U4ButtonA buttonA;
 
 // complex data-type median filter
-Algorithm med_x;
-Algorithm med_y;
-Algorithm med_z;
+Algorithm medAccel_x;
+Algorithm medAccel_y;
+Algorithm medAccel_z;
 
 // virtual object declarations
 SpeedController intrepid;
@@ -39,19 +39,21 @@ Romi32U4Motors saipan;
 void Behaviors::Init(void)
 {
     leyte.Init();
-    med_x.Init();
-    med_y.Init();
-    med_z.Init();
+    medAccel_x.Init();
+    medAccel_y.Init();
+    medAccel_z.Init();
     intrepid.Init();
     tarawa.Init();
 }
 
+// this needs to be configured to measure the collision strength from any direction
+// on the plane. running theory is that pythagorean theorem could achieve this.
 boolean Behaviors::DetectCollision(void)
 {
     auto data_acc = leyte.ReadAcceleration();
-    data[0] = med_x.ComplexTypeFilter(data_acc.X)*0.061;
-    data[1] = med_y.ComplexTypeFilter(data_acc.Y)*0.061;
-    data[2] = med_z.ComplexTypeFilter(data_acc.Z)*0.061;
+    data[0] = medAccel_x.ComplexTypeFilter(data_acc.X)*0.061;
+    data[1] = medAccel_y.ComplexTypeFilter(data_acc.Y)*0.061;
+    data[2] = medAccel_z.ComplexTypeFilter(data_acc.Z)*0.061;
     if((data[0]) < threshold) return 1;
     else return 0;
 }
@@ -59,9 +61,9 @@ boolean Behaviors::DetectCollision(void)
 boolean Behaviors::DetectBeingPickedUp(void)
 {
     auto data_pickup = leyte.ReadAcceleration();
-    data[0] = (med_x.ComplexTypeFilter(data_pickup.X) * 0.061);
-    data[1] = (med_y.ComplexTypeFilter(data_pickup.Y) * 0.061);
-    data[2] = (med_z.ComplexTypeFilter(data_pickup.Z) * 0.061);
+    data[0] = (medAccel_x.ComplexTypeFilter(data_pickup.X) * 0.061);
+    data[1] = (medAccel_y.ComplexTypeFilter(data_pickup.Y) * 0.061);
+    data[2] = (medAccel_z.ComplexTypeFilter(data_pickup.Z) * 0.061);
     if((abs(data[2])) > threshold_pickup) return 1;     // this returns only if the romi is being lifted.
     else return 0;
 }
