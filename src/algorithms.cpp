@@ -1,12 +1,8 @@
 #include <Romi32U4.h>
 #include "algorithms.h"
-#include <math.h>
+// #include <math.h>
 // #include <DFW.h>
 // using namespace std;
-
-float medianReturn;
-int i;
-float transit;
 
 void Algorithm::SortAscending(float inputArray[], int n) {
     int i, j, min_idx;
@@ -42,4 +38,36 @@ float Algorithm::FetchMedian(float inputArray[], int n, bool even) {
         medianReturn = inputArray[(n - 1) / 2];
     }
     return medianReturn;
+}
+
+void Algorithm::Init(void)
+{
+    // no initialization required, but good practice
+}
+
+// below is Nemitz-provided code
+void Algorithm::ComplexTypeSort(int index_a, int index_b)
+{
+    if(array[index_a] < array[index_b]){
+        int temp = array[index_a];
+        array[index_a] = array[index_b];
+        array[index_b] = temp;
+    }
+}
+
+int Algorithm::ComplexTypeFilter(int measurement)
+{
+    array[0] = measurement;
+    for(int i = 4; i > 0; i--) array[i] = array[i-1];
+    
+    ComplexTypeSort(0,1);
+    ComplexTypeSort(3,4);
+    ComplexTypeSort(0,2);
+    ComplexTypeSort(1,2);
+    ComplexTypeSort(0,3);
+    ComplexTypeSort(2,3);
+    ComplexTypeSort(1,4);
+    ComplexTypeSort(1,2);
+
+    return array[2];
 }
