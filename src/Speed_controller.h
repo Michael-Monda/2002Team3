@@ -9,6 +9,7 @@ class SpeedController{
         const float Ki = 0.1; 
         float E_left = 0; 
         float E_right = 0;
+        int counts = 0;
 
     public:
         void Init(void);
