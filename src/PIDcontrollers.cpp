@@ -19,6 +19,8 @@ void PIDcontrollers::Init(void)
     MagneticEncoder.Init();
 }
 
+// TODO: replace  the following function with the one written for the Lab 5 Bonus signoff,
+// since it performs much more consistently.
 void PIDcontrollers::FollowAtDistance () {
     if(MagneticEncoder.UpdateEncoderCounts()){
         camera2.readTag(dakota);

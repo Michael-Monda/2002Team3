@@ -13,27 +13,24 @@
 #include "openmv.h"
 #include "apriltagdatum.h"
 
-#include "mqtt.h"
-// #include "wifi_credentials.h"
-
 //sensors
-IMU_sensor leyte;
+IMU_sensor leyte;       // I like to give them names because I think it's easier to associate them with their functions.
 IRsensor ranger;
 SonarSensor hornet;
 
 Romi32U4ButtonA buttonA;
 
 // complext data-type median filter
-Algorithm gyro_x_stab;
-Algorithm gyro_y_stab;
-Algorithm gyro_z_stab;
+Algorithm gyro_x_stab;  // this object used to find the median x acceleration of the romi over a given interval.
+Algorithm gyro_y_stab;  // this object used to find the median y acceleration of the romi over a given interval.
+Algorithm gyro_z_stab;  // this object used to find the median z acceleration of the romi over a given interval.
 
 //motor-speed controller
 PIDcontrollers DriveControl;
 WallFollowingController FollowControl;
 Romi32U4Motors drivetrain;
 
-
+// initialize all the things.
 void Behaviors::Init(void)
 {
     leyte.Init();
@@ -52,6 +49,12 @@ boolean Behaviors::DetectCollision(void)
     data[0] = gyro_x_stab.ComplexTypeFilter(data_acc.X)*0.061;
     data[1] = gyro_y_stab.ComplexTypeFilter(data_acc.Y)*0.061;
     data[2] = gyro_z_stab.ComplexTypeFilter(data_acc.Z)*0.061;
+
+    // TODO:
+    // based upon my conversation with professor Nemitz this week, there may be some
+    // good solutions to non-normal collisions by creating a second threshold in the
+    // y-direction and insituting an "or" operand in the if statement.
+
     if((data[0]) < threshold) return 1;
     else return 0;
 }
@@ -71,7 +74,19 @@ void Behaviors::Stop(void)
     DriveControl.Stop();
 }
 
-// IDLE, DRIVE, REVERSE, TURN
+// TODO:
+// below is the STATE MACHINE code for our final project.
+// if we need to define new functions specific to actions
+// done only for the final project, please define them in
+// a new class so they can be properly organized. If not
+// able, please denote them clearly and I will modify the
+// workspace folder later today.
+
+// additionally, consider creating a function which gets
+// the size of an apriltag and compares it with the target,
+// in order for the robot to change into a new state only
+// when it sees it from a desired locaiton.
+
 void Behaviors::Run(void)
 {
     auto data_crash = leyte.ReadAcceleration();

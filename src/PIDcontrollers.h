@@ -13,6 +13,7 @@ class PIDcontrollers{
         // float E_dist = 0;
         int counts;
         uint16_t median = 80;
+        // TODO: adjust target area, for identification at a specific distance.
         uint16_t targetArea = 1089; //33 pixels by 33 pixels
 
     public:
