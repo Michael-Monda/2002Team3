@@ -7,6 +7,7 @@ class SpeedController{
     private:
         const float Kp = 0.5; //Adapt the parameters until your robot moves at the speed you command it to drive
         const float Ki = 0.1; 
+        const float counts = 1440; // number of encoder counts in a wheel turn
         float E_left = 0; 
         float E_right = 0;
 

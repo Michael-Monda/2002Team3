@@ -70,7 +70,7 @@ void Behaviors::Run(void)
 
     switch (robot_state)
     {
-    case IDLE:
+    case IDLE: //KEEP IDLE
     {
         if(buttonA.getSingleDebouncedRelease()) {
             robot_state = DRIVE; 
@@ -82,7 +82,7 @@ void Behaviors::Run(void)
     break;
     }
 
-    case DRIVE:
+    case DRIVE: //CEDRIC
     {
         if (buttonA.getSingleDebouncedRelease() || DetectBeingPickedUp() == true) { //transition condition
             robot_state = IDLE;
@@ -101,7 +101,7 @@ void Behaviors::Run(void)
     break;
     }
 
-    case REVERSE:
+    case REVERSE: //HARRY
     {   // back up for 10 centimeters
         PIcontroller.Reverse(50, 10);
         robot_state = TURN;
@@ -110,7 +110,7 @@ void Behaviors::Run(void)
     break;
     }
 
-    case TURN:
+    case TURN: //KRUM
     {
         PIcontroller.Turn(90, false);
         robot_state = DRIVE;

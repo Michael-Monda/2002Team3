@@ -2,7 +2,9 @@
 #include "Encoders.h"
 #include  "Speed_controller.h"
 #include "Position_estimation.h"
+// #include <Chassis.h> //Do we need/have? (I assume yes but idk) it is erroring for me (Sam)
 
+// Chassis chassis;
 Romi32U4Motors motors;
 Encoder MagneticEncoder;
 Position odometer; 
@@ -92,4 +94,14 @@ void SpeedController::Stop()
 {
     motors.setEfforts(0,0);
     odometer.Stop();
+}
+
+void SpeedController::lineFollow (float baseSpeed) {
+  bool onLine = true; // boolean value initially set at true
+  while (onLine) {
+    onLine = analogRead(leftReflectance) <= 600 || analogRead(rightReflectance) <= 600; // boolean value set to false when both sensors detect the line
+    float lineError = analogRead(rightReflectance) - analogRead(leftReflectance); // calculation of error between sensor values
+    float errorControl = Kp * lineError; // calculating proportional control using error and kp constant
+    //chassis.setTwist(baseSpeed, errorControl); // drives robot forward using the set speed and proportional control
+  }
 }
