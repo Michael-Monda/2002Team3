@@ -1,5 +1,5 @@
 #include <Romi32U4.h>
-#include "Speed_controller.h"
+#include "PIDcontrollers.h"
 #include "Wall_following_controller.h"
 
 #include "Behaviors.h"
@@ -9,6 +9,12 @@
 #include "IMU.h"
 #include "IR_sensor.h"
 #include "Sonar_sensor.h"
+
+#include "openmv.h"
+#include "apriltagdatum.h"
+
+#include "mqtt.h"
+// #include "wifi_credentials.h"
 
 //sensors
 IMU_sensor leyte;
@@ -23,7 +29,7 @@ Algorithm gyro_y_stab;
 Algorithm gyro_z_stab;
 
 //motor-speed controller
-SpeedController DriveControl;
+PIDcontrollers DriveControl;
 WallFollowingController FollowControl;
 Romi32U4Motors drivetrain;
 
