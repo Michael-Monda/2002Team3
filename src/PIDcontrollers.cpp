@@ -1,19 +1,45 @@
 #include <Romi32U4.h>
 #include "Encoders.h"
-#include  "Speed_controller.h"
-#include "Position_estimation.h"
+#include "PIDcontrollers.h"
+
+// apriltag stuff
+#include "apriltagdatum.h"
+#include <Arduino.h>
+#include <Wire.h>
+#include <openmv.h>
+//#include "Position_estimation.h"
 
 Romi32U4Motors motors;
 Encoder MagneticEncoder;
-Position odometer; 
+AprilTagDatum dakota;
+OpenMV camera2;
 
-void SpeedController::Init(void)
+void PIDcontrollers::Init(void)
 {
     MagneticEncoder.Init();
-    odometer.Init();
 }
 
-void SpeedController::Run(float target_velocity_left, float target_velocity_right)
+void PIDcontrollers::FollowAtDistance () {
+    if(MagneticEncoder.UpdateEncoderCounts()){
+        camera2.readTag(dakota);
+        float e_left = (dakota.cx - median);
+        float e_right = (median - dakota.cx);
+        float e_Area = targetArea - (dakota.h * dakota.w);
+        //float e_dist = targetDistance - hornet.FilterData(false);
+
+        E_left += e_left;
+        E_right += e_right;
+
+        float v_left = Kpd*e_Area + Kp*e_left + Ki*E_left;
+        float v_right = Kpd*e_Area + Kp*e_right + Ki*E_right;
+        // float v_left = Kpd*e_Area * (targetWheelspeed + Kp*e_left + Ki*E_left) + (Kp*e_left + Ki*E_left);
+        // float v_right = Kpd*e_Area * (targetWheelspeed + Kp*e_right + Ki*E_right) + (Kp*e_left + Ki*E_left);
+
+        motors.setEfforts(v_left,v_right);
+    }
+}
+
+void PIDcontrollers::Run(float target_velocity_left, float target_velocity_right)
 {
     if(MagneticEncoder.UpdateEncoderCounts()){
         float e_left = target_velocity_left - MagneticEncoder.ReadVelocityLeft();
@@ -26,7 +52,6 @@ void SpeedController::Run(float target_velocity_left, float target_velocity_righ
         float u_right = Kp*e_right + Ki*E_right;
 
         motors.setEfforts(u_left,u_right);
-        odometer.UpdatePose(target_velocity_left,target_velocity_right);
         
         // Serial.print(MagneticEncoder.ReadVelocityLeft());
         // Serial.print('\t');
@@ -34,7 +59,7 @@ void SpeedController::Run(float target_velocity_left, float target_velocity_righ
     }
 }
 
-boolean SpeedController::Turn(int degree, int direction)
+boolean PIDcontrollers::Turn(int degree, int direction)
 {
     motors.setEfforts(0, 0);
     int turns = counts*(degree/180.0); //assignment 1: convert degree into counts
@@ -48,32 +73,32 @@ boolean SpeedController::Turn(int degree, int direction)
     motors.setEfforts(0, 0);
     return 1;
 }
-boolean SpeedController::Straight(int target_velocity, int time) //in mm/s and s
+boolean PIDcontrollers::Straight(int target_velocity, int time) //in mm/s and s
 {
     motors.setEfforts(0, 0);
     unsigned long now = millis();
 
-    while ((unsigned long)(millis() - now) <= time*1000){
+    while ((unsigned long)(millis() - now) <= (unsigned long)time*1000){
         Run(target_velocity,target_velocity);
     }
     motors.setEfforts(0, 0);
     return 1;
 }
 
-boolean SpeedController::Curved(int target_velocity_left, int target_velocity_right, int time) //in mm/s and s
+boolean PIDcontrollers::Curved(int target_velocity_left, int target_velocity_right, int time) //in mm/s and s
 {
     motors.setEfforts(0, 0);
     
     unsigned long now = millis();
 
-    while ((unsigned long)(millis() - now) <= time*1000){
+    while ((unsigned long)(millis() - now) <= (unsigned long)time*1000){
         Run(target_velocity_left,target_velocity_right);
     }
     motors.setEfforts(0, 0);
     return 1;
 }
 
-bool SpeedController::Reverse(int target_velocity, int distance) //in mm/s and cm
+bool PIDcontrollers::Reverse(int target_velocity, int distance) //in mm/s and cm
 {
     motors.setEfforts(0, 0);
     
@@ -88,8 +113,7 @@ bool SpeedController::Reverse(int target_velocity, int distance) //in mm/s and c
     return 1;
 }
 
-void SpeedController::Stop()
+void PIDcontrollers::Stop()
 {
     motors.setEfforts(0,0);
-    odometer.Stop();
 }
