@@ -11,8 +11,9 @@ class Behaviors{
         int threshold_pickup = 1500;
         int speed = 150;
         int data[3] = {0};
-        enum ROBOT_STATE {IDLE, DRIVE, REVERSE, TURN};
+        enum ROBOT_STATE {IDLE, HARRY, CEDRIC, KRUM, FLEUR};    //DRIVE, REVERSE, TURN
         ROBOT_STATE robot_state = IDLE; //initial state: IDLE
+        ROBOT_STATE romiNumber = IDLE;
          
     public:
         void Init(void);
