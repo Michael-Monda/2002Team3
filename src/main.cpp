@@ -11,5 +11,3 @@ void setup() {
 void loop() {
   collisionBehavior.Run();
 }
-
-//State Machine
