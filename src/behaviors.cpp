@@ -177,7 +177,7 @@ void Behaviors::Run(void)
                 // line follow to hit bum
 
                 // drive  
-    // miss first intersecti              on
+                // miss first intersection
                     // turn right at second intersection
                     // drive
                     // turn right at first intersection
@@ -185,7 +185,9 @@ void Behaviors::Run(void)
                     // turn left at first intersection
                     // drive
                     // turn left at first intersection
+
                     // drive and hit bump switch
+                
                     // reverse and turn
                     // miss first intersection
                     // turn left at second intersection

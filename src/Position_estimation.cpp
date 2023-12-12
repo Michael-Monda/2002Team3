@@ -61,4 +61,3 @@ void Position::UpdatePose(float target_speed_left, float target_speed_right)
         }
     }
 }
-
