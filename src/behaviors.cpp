@@ -210,8 +210,8 @@ void Behaviors::Run(void)
                     // drive
                     // turn right at first intersection
                     // drive
-                    // see APRIL tag at certain distance - stop
-                    if (ComptagSize()) {
+                    DriveControl.FollowAtDistance();    // this will adjust the romi position until target = curr size
+                    if (ComptagSize()) {                // see APRIL tag at certain distance - stop
                         Stop();
                     }
 

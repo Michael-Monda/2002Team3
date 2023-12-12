@@ -14,7 +14,7 @@ class Behaviors{
         enum ROBOT_STATE {IDLE, HARRY, CEDRIC, KRUM, FLEUR};    //DRIVE, REVERSE, TURN
         ROBOT_STATE robot_state = IDLE; //initial state: IDLE
         ROBOT_STATE romiNumber = IDLE;
-        int targetTagSize;
+        int targetTagSize = 4400;  // adjust this value to be the area of the apriltag in pixels at the desired distance.
          
     public:
         void Init(void);
