@@ -1,6 +1,7 @@
 #include <Romi32U4.h>
 #include "PIDcontrollers.h"
 #include "Wall_following_controller.h"
+#include <openmv.h>
 
 #include "Behaviors.h"
 #include "Algorithms.h"
@@ -18,6 +19,7 @@ IMU_sensor leyte;       // I like to give them names because I think it's easier
 IRsensor ranger;
 SonarSensor hornet;
 AprilTagDatum dakota;
+OpenMV camera;
 
 Romi32U4ButtonA buttonA;
 
@@ -123,6 +125,9 @@ void Behaviors::Run(void)
 {
     auto data_crash = leyte.ReadAcceleration();
 
+    camera.readTag(tag);                // ALWAYS read the tag in every condition.
+    tagCount = camera.getTagCount();
+
     switch (robot_state)
     {
     case IDLE:
@@ -143,8 +148,13 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            }
-            else {
+            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Harry
+                DriveControl.Stop();
+                // Insert code for accessing Krum location and returning to hit him
+                if () {
+
+                }
+            } else {
                 //line follow
                 //go straight two blocks (past one cross section)
                 //turn right
@@ -189,6 +199,12 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
+            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Cedric
+                DriveControl.Stop();
+                // Insert code for accessing Harry location and waiting for him to continue
+                if () {
+
+                }
             } else {
                 // line follow to hit bum
 
@@ -223,10 +239,10 @@ void Behaviors::Run(void)
                     // drive
                     // turn right at first intersection
                     // drive
-                    DriveControl.FollowAtDistance();    // this will adjust the romi position until target = curr size
-                    if (ComptagSize()) {                // see APRIL tag at certain distance - stop
-                        Stop();
-                    }
+                DriveControl.FollowAtDistance();    // this will adjust the romi position until target = curr size
+                if (ComptagSize()) {                // see APRIL tag at certain distance - stop
+                    Stop();
+                }
 
                         // wait for Harry to reach general location on map - start moving again
                     // turn left to reach l
@@ -269,6 +285,12 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
+            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Krum
+                DriveControl.Stop();
+                // Insert code for accessing Fleur location and returning to hit her
+                if () {
+
+                }
             } else {
                 // drive and hit bump switch
                 DriveControl.Run(150, 150);
@@ -288,6 +310,12 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
+            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Fleur
+                DriveControl.Stop();
+                // Insert code for accessing Krum location and returning to hit him
+                if () {
+
+                }
             } else {
             //FOLLOWLINE//
                 //line follow using Speed Controller/PID

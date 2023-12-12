@@ -14,6 +14,10 @@ class PIDcontrollers{
         const int rightSensor = 20;
         int leftSpeed;
         int rightSpeed;
+        float constant = 0.01;
+        float difference;
+        int divisor = 120;
+        int lineSensingThresh = 250;
 
         float E_left; 
         float E_right;
