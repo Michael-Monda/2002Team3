@@ -3,6 +3,7 @@
 
 #include <Romi32U4.h>
 
+// TODO: add a new variable which represents a collision threshold in the y-direction.
 class Behaviors{
     private:
     // -150 thresh for 150mm/s works extremely well.
@@ -10,8 +11,9 @@ class Behaviors{
         int threshold_pickup = 1500;
         int speed = 150;
         int data[3] = {0};
-        enum ROBOT_STATE {IDLE, DRIVE, REVERSE, TURN};
+        enum ROBOT_STATE {IDLE, HARRY, CEDRIC, KRUM, FLEUR};    //DRIVE, REVERSE, TURN
         ROBOT_STATE robot_state = IDLE; //initial state: IDLE
+        ROBOT_STATE romiNumber = IDLE;
          
     public:
         void Init(void);
