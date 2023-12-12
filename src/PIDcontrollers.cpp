@@ -115,6 +115,13 @@ bool PIDcontrollers::Reverse(int target_velocity, int distance) //in mm/s and cm
     return 1;
 }
 
+void PIDcontrollers::FollowLine(int targetSpeed) {
+    float 
+
+
+    motors.setEfforts(leftSpeed, rightSpeed);
+}
+
 void PIDcontrollers::Stop()
 {
     motors.setEfforts(0,0);

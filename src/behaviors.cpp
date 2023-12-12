@@ -154,8 +154,16 @@ void Behaviors::Run(void)
                 //turn left
                 //go straight to next cross section
                 //turn left to buzzer
-                //hit buzzer
-                //do a 180
+                // drive and hit bump switch
+                DriveControl.Run(150, 150);
+                // reverse and turn
+                if (DetectCollision()) {
+                    DriveControl.Reverse(110, 50);
+                }
+                DriveControl.Turn(30, 1);
+                while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
+                    DriveControl.Turn(200, 1);
+                }
                 // go foward to next cross sections
                 //turn left
                 //go to next cross section
@@ -194,13 +202,18 @@ void Behaviors::Run(void)
                     // drive
                     // turn left at first intersection
 
-                    // drive and hit bump switch
+                // drive and hit bump switch
                 DriveControl.Run(150, 150);
+                // reverse and turn
                 if (DetectCollision()) {
-                    DriveControl.Reverse();
-                    
+                    DriveControl.Reverse(110, 50);
                 }
-                    // reverse and turn
+                DriveControl.Turn(30, 1);
+                while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
+                    DriveControl.Turn(200, 1);
+                }
+                // Aditri add code for driving with sensors
+
                     // miss first intersection
                     // turn left at second intersection
                     // drive
@@ -244,11 +257,28 @@ void Behaviors::Run(void)
         break;
         }
     }
+
+    // TODO: I think the entrance conditions into these cases need to be revised
+    // as it stands right now, the machine will check for the "KRUM" state
+    // as configured in the switch statement in the Init() function. It then
+    // checks AGAIN if the romiNumber is 3, which makes no sense because the
+    // robotState KRUM will only occure if and only if the romiNumber == KRUM (3).
+    // Addtitionally, the FLEUR state else case is placed incorrect
     case KRUM:{
         if (romiNumber == 3) {
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
+            } else {
+                // drive and hit bump switch
+                DriveControl.Run(150, 150);
+                // reverse and turn
+                if (DetectCollision()) {
+                    DriveControl.Reverse(110, 50);
+                }
+                while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
+                    DriveControl.Turn(200, 1);
+                }
             }
         }
         break;
@@ -258,9 +288,7 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            }
-        }
-        else {
+            } else {
             //FOLLOWLINE//
                 //line follow using Speed Controller/PID
             //SEES FIRST DOUBLE WHITE// ignore
@@ -295,9 +323,18 @@ void Behaviors::Run(void)
             //APRIL TAG ID is __
                 //line follow using Speed Controller/PID
             //APRIL TAG IS __ IN AWAY//
-           
-
+            }
         }
+            // drive and hit bump switch
+            DriveControl.Run(150, 150);
+            // reverse and turn
+            if (DetectCollision()) {
+                DriveControl.Reverse(110, 50);
+            }
+            DriveControl.Turn(30, 1);
+            while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
+                DriveControl.Turn(200, 1);
+            }
         break;
     }
     
