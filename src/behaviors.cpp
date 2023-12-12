@@ -368,3 +368,51 @@ void Behaviors::Run(void)
     
     }
 }
+// HAVE TO EDIT TO OUR TAGS THIS IS FROM LAB 5
+// void Behaviors::NoState(void)
+// {
+//     motors1.setEfforts(0, 0);
+//     Serial.println("Searching");
+//     uint8_t tagCount = camera1.getTagCount();
+//     if (tagCount)
+//     {
+//         Serial.println("there is a tag");
+//         AprilTagDatum tag;
+//         if (camera1.readTag(tag))
+//         {
+//             Serial.println("I read the data");
+//             if (tag.id == 4)
+//             { // if a tag is seen and id is 4 (FindAprilTags() == 1)
+//                 Serial.println("drive tag");
+//                 Serial.println(tag.w);
+//                 Serial.println(tag.h);
+//                 if (MagneticEncoder1.UpdateEncoderCounts())
+//                 {
+//                     float e_left = (tag.cx - 80.0f);
+//                     float e_right = (80.0f - tag.cx);
+//                     float e_Area = 4000.0f - (tag.h * tag.w); //2500 //5000
+//                     // float e_dist = targetDistance - hornet.FilterData(false);
+
+//                     E_left += 0;//e_left;
+//                     E_right += 0;//e_right;
+
+//                     float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
+//                     float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
+//                     motors1.setEfforts(v_left, v_right);
+//                 }
+//                 // break;
+//             }
+//             else
+//             { // if a tag is seen (FindAprilTags() == 2)
+//                 Serial.println("wrong tag");
+//                 digitalWrite(PIN_A3, LOW);
+//                 delay(200);
+//                 digitalWrite(PIN_A3, HIGH);
+//                 delay(200);
+//                 digitalWrite(PIN_A3, LOW);
+//                 delay(200);
+//                 // break;
+//             }
+//         }
+//     }
+// }
