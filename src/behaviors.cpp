@@ -17,6 +17,7 @@
 IMU_sensor leyte;       // I like to give them names because I think it's easier to associate them with their functions.
 IRsensor ranger;
 SonarSensor hornet;
+AprilTagDatum dakota;
 
 Romi32U4ButtonA buttonA;
 
@@ -91,6 +92,13 @@ boolean Behaviors::DetectBeingPickedUp(void)
     data[2] = (gyro_z_stab.ComplexTypeFilter(data_pickup.Z) * 0.061);
     if((abs(data[2])) > threshold_pickup) return 1;     // this returns only if the romi is being lifted.
     else return 0;
+}
+
+boolean Behaviors::ComptagSize(void) {
+    int currSize = dakota.w * dakota.h;
+    if (currSize == targetTagSize) {
+        return true;
+    } else return false;
 }
 
 void Behaviors::Stop(void)
@@ -187,7 +195,11 @@ void Behaviors::Run(void)
                     // turn left at first intersection
 
                     // drive and hit bump switch
-                
+                DriveControl.Run(150, 150);
+                if (DetectCollision()) {
+                    DriveControl.Reverse();
+                    
+                }
                     // reverse and turn
                     // miss first intersection
                     // turn left at second intersection
@@ -199,6 +211,10 @@ void Behaviors::Run(void)
                     // turn right at first intersection
                     // drive
                     // see APRIL tag at certain distance - stop
+                    if (ComptagSize()) {
+                        Stop();
+                    }
+
                         // wait for Harry to reach general location on map - start moving again
                     // turn left to reach l
 

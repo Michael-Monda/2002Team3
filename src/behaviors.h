@@ -14,6 +14,7 @@ class Behaviors{
         enum ROBOT_STATE {IDLE, HARRY, CEDRIC, KRUM, FLEUR};    //DRIVE, REVERSE, TURN
         ROBOT_STATE robot_state = IDLE; //initial state: IDLE
         ROBOT_STATE romiNumber = IDLE;
+        int targetTagSize;
          
     public:
         void Init(void);
@@ -21,6 +22,7 @@ class Behaviors{
         void Run(void);
         boolean DetectCollision(void);
         boolean DetectBeingPickedUp(void);
+        boolean ComptagSize(void);
 };
 
 #endif
