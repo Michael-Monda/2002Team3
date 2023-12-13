@@ -48,23 +48,23 @@ void Behaviors::Init(void)
     FollowControl.Init();
 
     switch (romiNumber) {
-        case IDLE:
+        case IDLE:                  // romi number == 0
             robot_state = IDLE;
         break;
 
-        case HARRY:
-            robot_state = HARRY;
+        case HARRY:                 // romi number == 1
+            robot_state = HARRY;    
         break;
 
-        case CEDRIC:
-            robot_state = CEDRIC;
+        case CEDRIC:                // romi number == 2
+            robot_state = CEDRIC;   
         break;
 
-        case KRUM:
-            robot_state = KRUM;
+        case KRUM:                  // romi number == 3
+            robot_state = KRUM;     
         break;
 
-        case FLEUR:
+        case FLEUR:                 // romi number == 4
             robot_state = FLEUR;
         break;
     }
