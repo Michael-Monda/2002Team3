@@ -10,6 +10,7 @@
 #include "IMU.h"
 #include "IR_sensor.h"
 #include "Sonar_sensor.h"
+#include "Encoders.h"
 
 #include "openmv.h"
 #include "apriltagdatum.h"
@@ -32,6 +33,7 @@ Algorithm gyro_z_stab;  // this object used to find the median z acceleration of
 PIDcontrollers DriveControl;
 WallFollowingController FollowControl;
 Romi32U4Motors drivetrain;
+Encoder wheelEncoders;
 
 // define which number romi is which "character"
 
@@ -46,7 +48,6 @@ void Behaviors::Init(void)
     gyro_z_stab.Init();
     DriveControl.Init();
     FollowControl.Init();
-
 
     // TODO: determine which romis need to react to which tags.
     switch (romiNumber) {
@@ -145,7 +146,7 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag ID for Harry @ curr loc
+            } else if ((tagCount == 1) && (dakota.id == harryTargetA)) { // Replace with target tag ID for Harry @ curr loc
                 DriveControl.Stop();
                 // Insert code for accessing Krum location and returning to hit him
                 /*
@@ -192,7 +193,12 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Cedric @ curr loc
+            } else if ((tagCount == 1) && (dakota.id == cedricTargetA)) { // Replace with target tag for Cedric @ curr loc
+                DriveControl.Stop();
+                // Insert code for accessing Harry location and waiting for him to continue
+                /*
+                */
+            } else if ((tagCount == 1) && (dakota.id == cedricTargetB)) { // Replace with target tag for Cedric @ curr loc
                 DriveControl.Stop();
                 // Insert code for accessing Harry location and waiting for him to continue
                 /*
@@ -274,12 +280,16 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Krum @ curr loc
+            } else if ((tagCount == 1) && (dakota.id == fleurTargetA)) { // Replace with target tag for Krum @ curr loc
                 DriveControl.Stop();
                 // Insert code for accessing Fleur location and returning to hit her
-                if () {
-
-                }
+                /*
+                */
+            } else if ((tagCount == 1) && (dakota.id == fleurTargetB)) { // Replace with target tag for Krum @ curr loc
+                DriveControl.Stop();
+                // Insert code for accessing Fleur location and returning to hit her
+                /*
+                */
             } else {
                 // drive and hit bump switch
                 DriveControl.Run(150, 150);
@@ -296,12 +306,11 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Fleur
+            } else if ((tagCount == 1) && (dakota.id == krumTargetA)) { // Replace with target tag for Fleur
                 DriveControl.Stop();
                 // Insert code for accessing Krum location and returning to hit him
-                if () {
-
-                }
+                /*
+                */
             } else {
             //FOLLOWLINE//
                 //line follow using Speed Controller/PID
@@ -404,96 +413,71 @@ void Behaviors::Run(void)
 
 //sam code
 
-void Behaviors::NoState(void)
-{
-    motors1.setEfforts(0, 0);
+void Behaviors::NoState(void) {
+    drivetrain.setEfforts(0, 0);
     Serial.println("Searching");
-    uint8_t tagCount = camera1.getTagCount();
-    if (tagCount)
-    {
+    uint8_t tagCount = camera.getTagCount();
+
+    if (tagCount != 0) {
         Serial.println("A task is coming up");
-        AprilTagDatum tag;
-        if (camera1.readTag(tag))
+
+        if (camera.readTag(dakota))
         {
             Serial.println("I see a skrewt");
-            if (tag.id == 1) // this is what we can use for harry and cedrics first tags
+
+            if (dakota.id == 1) // this is what we can use for harry and cedrics first tags
             { 
                 Serial.println(" I am comming up on the challenge");
-                Serial.println(tag.w);
-                Serial.println(tag.h);
-                if (MagneticEncoder1.UpdateEncoderCounts())
-                {
-                    float e_left = (tag.cx - 80.0f);
-                    float e_right = (80.0f - tag.cx);
-                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
-                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
-                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
-                    motors1.setEfforts(v_left, v_right);
-                    Serial.println("The skrewt has been defeated");
-                    break; 
+                Serial.println(dakota.w);
+                Serial.println(dakota.h);
 
+                if (wheelEncoders.UpdateEncoderCounts()) {
+                    DriveControl.FollowAtDistance();
                 }
                 //break;
             }
-            else if (tag.id == 2) // This should be the one that fleur sees to edject her from the game
+            else if (dakota.id == 2) // This should be the one that fleur sees to edject her from the game
             //we can also do this for krum to make him bad -- all that we would have to change is the print statments to make him "go bad"
             { // if a tag is seen (FindAprilTags() == 2)
                 Serial.println(" I am comming up on the challenge");
-                Serial.println(tag.w);
-                Serial.println(tag.h);
-                if (MagneticEncoder1.UpdateEncoderCounts())
-                {
-                    float e_left = (tag.cx - 80.0f);
-                    float e_right = (80.0f - tag.cx);
-                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
-                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
-                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
-                    motors1.setEfforts(v_left, v_right);
-                digitalWrite(PIN_A3, LOW);
-                delay(200);
-                digitalWrite(PIN_A3, HIGH);
-                delay(200);
-                digitalWrite(PIN_A3, LOW);
-                delay(200);
-                Serial.println("Bye Bye");
-                // break;
-            }
-            else if (tag.id == 3) // This should be the one that can be used for the cup
-            { 
-                Serial.println("I see the cup coming up");
-                Serial.println(tag.w);
-                Serial.println(tag.h);
-                if (MagneticEncoder1.UpdateEncoderCounts())
-                {
-                    float e_left = (tag.cx - 80.0f);
-                    float e_right = (80.0f - tag.cx);
-                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
-                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
-                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
-                    motors1.setEfforts(v_left, v_right);
+                Serial.println(dakota.w);
+                Serial.println(dakota.h);
+
+                if (wheelEncoders.UpdateEncoderCounts()) {
+                    DriveControl.FollowAtDistance();
+                    digitalWrite(PIN_A3, LOW);
+                    delay(200);
+                    digitalWrite(PIN_A3, HIGH);
+                    delay(200);
+                    digitalWrite(PIN_A3, LOW);
+                    delay(200);
+                    Serial.println("Bye Bye");
+                    // break;
+                } else if (dakota.id == 3) {// This should be the one that can be used for the cup 
+                    Serial.println("I see the cup coming up");
+                    Serial.println(dakota.w);
+                    Serial.println(dakota.h);
+                    if (wheelEncoders.UpdateEncoderCounts()) {
+                        DriveControl.FollowAtDistance();
+                    }
                 //ADD THE 360 SPIN 
                 Serial.println("Whooohooo");
                 // break;
+                }
             }
-        }
-            else if (tag.id == 4) // This should be the one that can be used for the cup
-            { 
+            else if (dakota.id == 4) {// This should be the one that can be used for the cup
                 Serial.println("I see the cup coming up yay... wait a minute");
-                Serial.println(tag.w);
-                Serial.println(tag.h);
-                if (MagneticEncoder1.UpdateEncoderCounts())
-                {
-                    float e_left = (tag.cx - 80.0f);
-                    float e_right = (80.0f - tag.cx);
-                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
-                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
-                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
-                    motors1.setEfforts(v_left, v_right);
-                    motor.setEfforts(50,-50,10);
-                    motor.setEfforts(75,75); 
-                Serial.println("AHHHHHHHHHH");
+                Serial.println(dakota.w);
+                Serial.println(dakota.h);
+                if (wheelEncoders.UpdateEncoderCounts())  {
+                    DriveControl.FollowAtDistance();
                 // break;
+                } else if (!wheelEncoders.UpdateEncoderCounts()) {
+                    drivetrain.setEfforts(50,-50);
+                    drivetrain.setEfforts(75,75); 
+                    Serial.println("AHHHHHHHHHH");
+                }
             }
         }
     }
-}}}
+}

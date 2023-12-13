@@ -127,7 +127,7 @@ void PIDcontrollers::LineFollow()
     motors.setEfforts(u_left + 50.0,u_right + 50.0);
 }
 
-void SpeedController::TurnTillLine(String direction)
+void PIDcontrollers::TurnTillLine(String direction)
 {
     if(direction == "L")
     {

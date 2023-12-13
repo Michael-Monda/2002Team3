@@ -22,11 +22,22 @@ class Behaviors{
         const float Kpd = 0.035; //0.1 //0.05
         float E_left; 
         float E_right;
+        
+        // AprilTags to be identified in sequence
+        const unsigned int harryTargetA = 0;
+        const unsigned int harryTargetB = 1;
+        const unsigned int cedricTargetA = 2;
+        const unsigned int cedricTargetB = 3;
+        const unsigned int krumTargetA = 4;
+        const unsigned int krumTargetB = 5;
+        const unsigned int fleurTargetA = 6;
+        const unsigned int fleurTargetB = 7;
          
     public:
         void Init(void);
         void Stop(void);
         void Run(void);
+        void NoState(void);
         boolean DetectCollision(void);
         boolean DetectBeingPickedUp(void);
         boolean ComptagSize(void);
