@@ -8,6 +8,7 @@ class Behaviors{
     private:
     // -150 thresh for 150mm/s works extremely well.
         int threshold = -110;    //-100 for 50mm/s, 
+        int horThresh = 55;      // threshold value compared with abs(y acceleration) to account for non-normal collisions
         int threshold_pickup = 1500;
         int speed = 150;
         int data[3] = {0};
@@ -16,6 +17,11 @@ class Behaviors{
         ROBOT_STATE romiNumber = IDLE;
         int targetTagSize = 4400;  // adjust this value to be the area of the apriltag in pixels at the desired distance.
         int tagCount;
+        const float Kp = 1.35; //Adapt the parameters until your robot moves at the speed you command it to drive //1.35
+        const float Ki = 1.35; //0.1 //1
+        const float Kpd = 0.035; //0.1 //0.05
+        float E_left; 
+        float E_right;
          
     public:
         void Init(void);

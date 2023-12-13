@@ -77,12 +77,7 @@ boolean Behaviors::DetectCollision(void)
     data[1] = gyro_y_stab.ComplexTypeFilter(data_acc.Y)*0.061;
     data[2] = gyro_z_stab.ComplexTypeFilter(data_acc.Z)*0.061;
 
-    // TODO:
-    // based upon my conversation with professor Nemitz this week, there may be some
-    // good solutions to non-normal collisions by creating a second threshold in the
-    // y-direction and insituting an "or" operand in the if statement.
-
-    if((data[0]) < threshold) return 1;
+    if(((data[0]) < threshold) || (abs(data[1])) > horThresh) return 1;
     else return 0;
 }
 
