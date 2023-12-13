@@ -47,26 +47,28 @@ void Behaviors::Init(void)
     DriveControl.Init();
     FollowControl.Init();
 
+
+    // TODO: determine which romis need to react to which tags.
     switch (romiNumber) {
         case IDLE:                  // romi number == 0
             robot_state = IDLE;
         break;
 
         case HARRY:                 // romi number == 1
-            robot_state = HARRY;    
-        break;
+            robot_state = HARRY;    // HARRY carries dakota ID 6 on its back   
+        break;                      // HARRY needs to recognize tags x, y
 
         case CEDRIC:                // romi number == 2
-            robot_state = CEDRIC;   
-        break;
+            robot_state = CEDRIC;   // CEDRIC carries dakota ID 7 on its back
+        break;                      // CEDRIC needs to recognize tags x, y
 
         case KRUM:                  // romi number == 3
-            robot_state = KRUM;     
-        break;
+            robot_state = KRUM;     // KRUM carries dakota ID 8 on its back
+        break;                      // KRUM needs to recognize tags x, y
 
         case FLEUR:                 // romi number == 4
-            robot_state = FLEUR;
-        break;
+            robot_state = FLEUR;    // FLUER carries dakota ID 9 on its back
+        break;                      // FLEUR needs to recognize tags x, y
     }
 }
 
@@ -78,6 +80,7 @@ boolean Behaviors::DetectCollision(void)
     data[2] = gyro_z_stab.ComplexTypeFilter(data_acc.Z)*0.061;
 
     if(((data[0]) < threshold) || (abs(data[1])) > horThresh) return 1;
+    // horizontal threshold accounts for non-normal collision incidence angles
     else return 0;
 }
 
@@ -137,18 +140,16 @@ void Behaviors::Run(void)
     break;
 
     }
-
      case HARRY:{
         if (romiNumber == 1) {
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag ID for Harry
+            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag ID for Harry @ curr loc
                 DriveControl.Stop();
                 // Insert code for accessing Krum location and returning to hit him
-                if () {
-
-                }
+                /*
+                */
             } else {
                 //line follow
                 //go straight two blocks (past one cross section)
@@ -191,12 +192,11 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Cedric
+            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Cedric @ curr loc
                 DriveControl.Stop();
                 // Insert code for accessing Harry location and waiting for him to continue
-                if () {
-
-                }
+                /*
+                */
             } else {
                 // line follow to hit bum
 
@@ -217,9 +217,6 @@ void Behaviors::Run(void)
                     DriveControl.Reverse(110, 50);
                 }
                 DriveControl.Turn(30, 1);
-                while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
-                    DriveControl.Turn(200, 1);
-                }
                 // Aditri add code for driving with sensors
 
                     // miss first intersection
@@ -277,7 +274,7 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Krum
+            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Krum @ curr loc
                 DriveControl.Stop();
                 // Insert code for accessing Fleur location and returning to hit her
                 if () {
@@ -289,9 +286,6 @@ void Behaviors::Run(void)
                 // reverse and turn
                 if (DetectCollision()) {
                     DriveControl.Reverse(110, 50);
-                }
-                while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
-                    DriveControl.Turn(200, 1);
                 }
             }
         }
@@ -352,9 +346,6 @@ void Behaviors::Run(void)
                 DriveControl.Reverse(110, 50);
             }
             DriveControl.Turn(30, 1);
-            while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
-                DriveControl.Turn(200, 1);
-            }
         break;
     }
     
@@ -409,6 +400,9 @@ void Behaviors::Run(void)
 //     }
 // }
 // sensors
+
+
+//sam code
 
 void Behaviors::NoState(void)
 {
