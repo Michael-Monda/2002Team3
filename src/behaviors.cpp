@@ -20,6 +20,7 @@ IMU_sensor leyte;       // I like to give them names because I think it's easier
 IRsensor ranger;
 SonarSensor hornet;
 AprilTagDatum dakota;
+AprilTagDatum wallTag;
 OpenMV camera;
 
 Romi32U4ButtonA buttonA;
@@ -120,8 +121,7 @@ void Behaviors::Stop(void)
 // in order for the robot to change into a new state only
 // when it sees it from a desired locaiton.
 
-void Behaviors::Run(void)
-{
+void Behaviors::Run(void) {
     auto data_crash = leyte.ReadAcceleration();
 
     camera.readTag(dakota);                // ALWAYS read the tag in every condition.
@@ -338,6 +338,14 @@ void Behaviors::Run(void)
                 //turn lift until RR hit the white line
                 //line follow using Speed Controller/PID
             // HITS BUMP SWITCH//
+                // drive and hit bump switch
+            DriveControl.Run(150, 150);
+                // reverse and turn
+            if (DetectCollision()) {
+                DriveControl.Reverse(110, 50);
+            }
+            DriveControl.Turn(30, 1);
+            break;
                 //back up a little
                 //turns to left a little
                 //turn left until RR hit the white line
@@ -348,67 +356,10 @@ void Behaviors::Run(void)
             //APRIL TAG IS __ IN AWAY//
             }
         }
-            // drive and hit bump switch
-            DriveControl.Run(150, 150);
-            // reverse and turn
-            if (DetectCollision()) {
-                DriveControl.Reverse(110, 50);
-            }
-            DriveControl.Turn(30, 1);
-        break;
     }
     
     }
 }
-// HAVE TO EDIT TO OUR TAGS THIS IS FROM LAB 5 
-// void Behaviors::NoState(void)
-// {
-//     motors1.setEfforts(0, 0);
-//     Serial.println("Searching");
-//     uint8_t tagCount = camera1.getTagCount();
-//     if (tagCount)
-//     {
-//         Serial.println("there is a tag");
-//         AprilTagDatum tag;
-//         if (camera1.readTag(tag))
-//         {
-//             Serial.println("I read the data");
-//             if (tag.id == 4)
-//             { // if a tag is seen and id is 4 (FindAprilTags() == 1)
-//                 Serial.println("drive tag");
-//                 Serial.println(tag.w);
-//                 Serial.println(tag.h);
-//                 if (MagneticEncoder1.UpdateEncoderCounts())
-//                 {
-//                     float e_left = (tag.cx - 80.0f);
-//                     float e_right = (80.0f - tag.cx);
-//                     float e_Area = 4000.0f - (tag.h * tag.w); //2500 //5000
-//                     // float e_dist = targetDistance - hornet.FilterData(false);
-
-//                     E_left += 0;//e_left;
-//                     E_right += 0;//e_right;
-
-//                     float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
-//                     float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
-//                     motors1.setEfforts(v_left, v_right);
-//                 }
-//                 // break;
-//             }
-//             else
-//             { // if a tag is seen (FindAprilTags() == 2)
-//                 Serial.println("wrong tag");
-//                 digitalWrite(PIN_A3, LOW);
-//                 delay(200);
-//                 digitalWrite(PIN_A3, HIGH);
-//                 delay(200);
-//                 digitalWrite(PIN_A3, LOW);
-//                 delay(200);
-//                 // break;
-//             }
-//         }
-//     }
-// }
-// sensors
 
 
 //sam code
@@ -435,10 +386,10 @@ void Behaviors::NoState(void) {
                     DriveControl.FollowAtDistance();
                 }
                 //break;
-            }
-            else if (dakota.id == 2) // This should be the one that fleur sees to edject her from the game
-            //we can also do this for krum to make him bad -- all that we would have to change is the print statments to make him "go bad"
-            { // if a tag is seen (FindAprilTags() == 2)
+            } else if (dakota.id == 2) {    // This should be the one that fleur sees to edject her from the game
+                                            // we can also do this for krum to make him bad -- all that we would have to 
+                                            // change is the print statments to make him "go bad"
+                                            // if a tag is seen (FindAprilTags() == 2)
                 Serial.println(" I am comming up on the challenge");
                 Serial.println(dakota.w);
                 Serial.println(dakota.h);
@@ -460,9 +411,9 @@ void Behaviors::NoState(void) {
                     if (wheelEncoders.UpdateEncoderCounts()) {
                         DriveControl.FollowAtDistance();
                     }
-                //ADD THE 360 SPIN 
-                Serial.println("Whooohooo");
-                // break;
+                    //ADD THE 360 SPIN 
+                    Serial.println("Whooohooo");
+                    // break;
                 }
             }
             else if (dakota.id == 4) {// This should be the one that can be used for the cup
