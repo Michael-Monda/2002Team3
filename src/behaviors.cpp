@@ -125,7 +125,7 @@ void Behaviors::Run(void)
 {
     auto data_crash = leyte.ReadAcceleration();
 
-    camera.readTag(tag);                // ALWAYS read the tag in every condition.
+    camera.readTag(dakota);                // ALWAYS read the tag in every condition.
     tagCount = camera.getTagCount();
 
     switch (robot_state)
@@ -148,7 +148,7 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Harry
+            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag ID for Harry
                 DriveControl.Stop();
                 // Insert code for accessing Krum location and returning to hit him
                 if () {
@@ -171,9 +171,6 @@ void Behaviors::Run(void)
                     DriveControl.Reverse(110, 50);
                 }
                 DriveControl.Turn(30, 1);
-                while(analogRead(leftReflectance) <= 600) { // Aditri subject to change
-                    DriveControl.Turn(200, 1);
-                }
                 // go foward to next cross sections
                 //turn left
                 //go to next cross section
@@ -199,7 +196,7 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Cedric
+            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Cedric
                 DriveControl.Stop();
                 // Insert code for accessing Harry location and waiting for him to continue
                 if () {
@@ -285,7 +282,7 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Krum
+            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Krum
                 DriveControl.Stop();
                 // Insert code for accessing Fleur location and returning to hit her
                 if () {
@@ -310,7 +307,7 @@ void Behaviors::Run(void)
             if (buttonA.getSingleDebouncedRelease()){
                 robot_state = IDLE;
                 DriveControl.Stop();
-            } else if ((tagCount == 1) && (tag.id == )) { // Replace with target tag for Fleur
+            } else if ((tagCount == 1) && (dakota.id == )) { // Replace with target tag for Fleur
                 DriveControl.Stop();
                 // Insert code for accessing Krum location and returning to hit him
                 if () {
@@ -416,3 +413,98 @@ void Behaviors::Run(void)
 //         }
 //     }
 // }
+// sensors
+
+void Behaviors::NoState(void)
+{
+    motors1.setEfforts(0, 0);
+    Serial.println("Searching");
+    uint8_t tagCount = camera1.getTagCount();
+    if (tagCount)
+    {
+        Serial.println("A task is coming up");
+        AprilTagDatum tag;
+        if (camera1.readTag(tag))
+        {
+            Serial.println("I see a skrewt");
+            if (tag.id == 1) // this is what we can use for harry and cedrics first tags
+            { 
+                Serial.println(" I am comming up on the challenge");
+                Serial.println(tag.w);
+                Serial.println(tag.h);
+                if (MagneticEncoder1.UpdateEncoderCounts())
+                {
+                    float e_left = (tag.cx - 80.0f);
+                    float e_right = (80.0f - tag.cx);
+                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
+                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
+                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
+                    motors1.setEfforts(v_left, v_right);
+                    Serial.println("The skrewt has been defeated");
+                    break; 
+
+                }
+                //break;
+            }
+            else if (tag.id == 2) // This should be the one that fleur sees to edject her from the game
+            //we can also do this for krum to make him bad -- all that we would have to change is the print statments to make him "go bad"
+            { // if a tag is seen (FindAprilTags() == 2)
+                Serial.println(" I am comming up on the challenge");
+                Serial.println(tag.w);
+                Serial.println(tag.h);
+                if (MagneticEncoder1.UpdateEncoderCounts())
+                {
+                    float e_left = (tag.cx - 80.0f);
+                    float e_right = (80.0f - tag.cx);
+                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
+                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
+                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
+                    motors1.setEfforts(v_left, v_right);
+                digitalWrite(PIN_A3, LOW);
+                delay(200);
+                digitalWrite(PIN_A3, HIGH);
+                delay(200);
+                digitalWrite(PIN_A3, LOW);
+                delay(200);
+                Serial.println("Bye Bye");
+                // break;
+            }
+            else if (tag.id == 3) // This should be the one that can be used for the cup
+            { 
+                Serial.println("I see the cup coming up");
+                Serial.println(tag.w);
+                Serial.println(tag.h);
+                if (MagneticEncoder1.UpdateEncoderCounts())
+                {
+                    float e_left = (tag.cx - 80.0f);
+                    float e_right = (80.0f - tag.cx);
+                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
+                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
+                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
+                    motors1.setEfforts(v_left, v_right);
+                //ADD THE 360 SPIN 
+                Serial.println("Whooohooo");
+                // break;
+            }
+        }
+            else if (tag.id == 4) // This should be the one that can be used for the cup
+            { 
+                Serial.println("I see the cup coming up yay... wait a minute");
+                Serial.println(tag.w);
+                Serial.println(tag.h);
+                if (MagneticEncoder1.UpdateEncoderCounts())
+                {
+                    float e_left = (tag.cx - 80.0f);
+                    float e_right = (80.0f - tag.cx);
+                    float e_Area = 4000.0f - (tag.h * tag.w); //this is to fix how far away the robot is from the tag (4000.0f)
+                    float v_left = Kpd * e_Area + Kp * e_left + Ki * E_left;
+                    float v_right = Kpd * e_Area + Kp * e_right + Ki * E_right;
+                    motors1.setEfforts(v_left, v_right);
+                    motor.setEfforts(50,-50,10);
+                    motor.setEfforts(75,75); 
+                Serial.println("AHHHHHHHHHH");
+                // break;
+            }
+        }
+    }
+}}}

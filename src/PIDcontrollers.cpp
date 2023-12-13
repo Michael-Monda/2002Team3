@@ -115,11 +115,35 @@ bool PIDcontrollers::Reverse(int target_velocity, int distance) //in mm/s and cm
     return 1;
 }
 
-void PIDcontrollers::FollowLine(int targetSpeed) {
-    float 
+void PIDcontrollers::LineFollow()
+{
+    float error = (analogRead(leftReflectance) - analogRead(rightReflectance));
+    float u_left = kpline * error;
+    float u_right = kpline * -error;
+    Serial.println("Left: ");
+    Serial.println(analogRead(leftReflectance));
+    Serial.println("Right: ");
+    Serial.println(analogRead(rightReflectance));
+    motors.setEfforts(u_left + 50.0,u_right + 50.0);
+}
 
-
-    motors.setEfforts(leftSpeed, rightSpeed);
+void SpeedController::TurnTillLine(String direction)
+{
+    if(direction == "L")
+    {
+        while(analogRead(rightReflectance) > lineSensingThresh)
+        {
+            motors.setEfforts(-50.0, 50.0);
+        }
+    }
+    if(direction == "R")
+    {
+        while(analogRead(leftReflectance) > lineSensingThresh )
+        {
+            motors.setEfforts(50.0, -50.0);
+        }
+    }
+    motors.setEfforts(0, 0);
 }
 
 void PIDcontrollers::Stop()

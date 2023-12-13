@@ -15,6 +15,7 @@ class Behaviors{
         ROBOT_STATE robot_state = IDLE; //initial state: IDLE
         ROBOT_STATE romiNumber = IDLE;
         int targetTagSize = 4400;  // adjust this value to be the area of the apriltag in pixels at the desired distance.
+        int tagCount;
          
     public:
         void Init(void);

@@ -4,20 +4,21 @@
 #include <Romi32U4.h>
 
 class PIDcontrollers{
-    private:
+    private: 
+        // const int white = 50; 
+        // const int black = 600;  
+        const float kpline = 0.1; 
         const float Kp = 0.5; //Adapt the parameters until your robot moves at the speed you command it to drive
         const float Ki = 0.1;
         const float Kpd = 10.7;
         // LINE FOLLOWING STUFF 
         // reflectance sensor port numbers
-        const int leftSensor = 22;  
-        const int rightSensor = 20;
         int leftSpeed;
         int rightSpeed;
         float constant = 0.01;
         float difference;
         int divisor = 120;
-        int lineSensingThresh = 250;
+        int lineSensingThresh = 120;
 
         float E_left; 
         float E_right;
@@ -28,15 +29,14 @@ class PIDcontrollers{
         uint16_t targetArea = 1089; //33 pixels by 33 pixels
 
     public:
-        const int leftReflectanceThresh;
-        const int rightReflectanceThresh;
-        int leftReflectance;
-        int rightReflectance;
+        const int leftReflectance = 20;   // Left Analog Input Pin
+        const int rightReflectance = 22;  // Right Analog Input Pin
 
         void Init(void);
         void Run(float, float);
         void FollowAtDistance();
-        void FollowLine(int);
+        void LineFollow();
+        void TurnTillLine(String);
         void Stop(void);
         boolean Turn(int,int); //degrees, direction of rotation: 0->left, 1->right
         boolean Straight(int, int); //speed, duration
