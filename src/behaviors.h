@@ -28,10 +28,8 @@ class Behaviors{
         const unsigned int harryTargetB = 1;
         const unsigned int cedricTargetA = 2;
         const unsigned int cedricTargetB = 3;
-        const unsigned int krumTargetA = 4;
-        const unsigned int krumTargetB = 5;
-        const unsigned int fleurTargetA = 6;
-        const unsigned int fleurTargetB = 7;
+        const unsigned int krumTarget = 4;
+        const unsigned int fleurTarget = 5;
          
     public:
         void Init(void);

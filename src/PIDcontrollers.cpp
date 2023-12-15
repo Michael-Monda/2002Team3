@@ -11,7 +11,7 @@
 
 Romi32U4Motors motors;
 Encoder MagneticEncoder;
-AprilTagDatum dakota;
+AprilTagDatum nebraska;
 OpenMV camera2;
 
 void PIDcontrollers::Init(void)
@@ -23,10 +23,10 @@ void PIDcontrollers::Init(void)
 // since it performs much more consistently.
 void PIDcontrollers::FollowAtDistance () {
     if(MagneticEncoder.UpdateEncoderCounts()){
-        camera2.readTag(dakota);
-        float e_left = (dakota.cx - median);
-        float e_right = (median - dakota.cx);
-        float e_Area = targetArea - (dakota.h * dakota.w);
+        camera2.readTag(nebraska);
+        float e_left = (nebraska.cx - median);
+        float e_right = (median - nebraska.cx);
+        float e_Area = targetArea - (nebraska.h * nebraska.w);
         //float e_dist = targetDistance - hornet.FilterData(false);
 
         E_left += e_left;
