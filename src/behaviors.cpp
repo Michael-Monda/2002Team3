@@ -131,298 +131,198 @@ void Behaviors::Run(void) {
 
     switch (robot_state)
     {
-    case IDLE:
-    {
-        if(buttonA.getSingleDebouncedRelease()) {
-            robot_state = romiNumber; 
-            DriveControl.Stop(); //action
-        } else { //transition condition
-            robot_state = IDLE; 
-            DriveControl.Stop(); //action 
-        }   
-    break;
+        case IDLE:
+        {
+            if(buttonA.getSingleDebouncedRelease()) {
+                robot_state = romiNumber; 
+                DriveControl.Stop(); //action
+            } else { //transition condition
+                robot_state = IDLE; 
+                DriveControl.Stop(); //action 
+            }   
+        break;
 
-    }
-    case HARRY:{
-        if (romiNumber == 1) { // If the Romi used is 
-            if (buttonA.getSingleDebouncedRelease()) {
-                robot_state = IDLE;
-                DriveControl.Stop(); // When the camera doesn't view any tags of type 16h5;
-            } else if (tagCount != 0) {
-        
-                Serial.println("I see a task is coming up");
-                if (camera.getTagCount() != 0)
-                {
-                    Serial.println("I see a skrewt");
-                    if (dakota.id == harryTargetA || dakota.id == cedricTargetA) // when cedric or harry view their assigned APRIL tag
-                    { 
-                        Serial.println(" I am comming up on the challenge");
-                        Serial.println(dakota.w); 
+        }
+        case HARRY:{
+            if (romiNumber == 1) { // If the Romi used is 
+                if (buttonA.getSingleDebouncedRelease()) {
+                    robot_state = IDLE;
+                    DriveControl.Stop(); // When the camera doesn't view any tags of type 16h5;
+                } else if (tagCount != 0) {
+                
+                    Serial.println("I see a task is coming up");
+                    if (camera.getTagCount() != 0)
+                    {
+                        Serial.println("I see a skrewt");
+                        if (dakota.id == harryTargetA || dakota.id == cedricTargetA) // when cedric or harry view their assigned APRIL tag
+                        { 
+                            Serial.println(" I am comming up on the challenge");
+                            Serial.println(dakota.w); 
+                            Serial.println(dakota.h);
+
+                        } else if (wheelEncoders.UpdateEncoderCounts()) {
+                            DriveControl.FollowAtDistance(); // Align themselves at a set distance from the APRIL tag
+                            Serial.print("The challenge is complete. The skrewt is defeated");
+                        }
+
+                    } else if (dakota.id == harryTargetB) { // The second APRIL tag Harry sees - the cup at the end
+                        Serial.println("I see the cup coming up");
+                        Serial.println(dakota.w);
                         Serial.println(dakota.h);
+                        if (wheelEncoders.UpdateEncoderCounts()) { // Drive directly over the platform, a set distance from the APRIL tag
+                            DriveControl.FollowAtDistance();
+                        }
+                            //ADD THE 360 SPIN 
+                        Serial.println("Whooohooo"); // Harry wins
+                    } else {
+                        DriveControl.Run(150, 150);
+                            // reverse and turn
+                        if (DetectCollision()) {
+                            DriveControl.Reverse(110, 50);
+                        }
+                        DriveControl.Turn(30, 1);
+                    }    
+                }
+            }
+            break;
+        }
 
-                    } else if (wheelEncoders.UpdateEncoderCounts()) {
-                        DriveControl.FollowAtDistance(); // Align themselves at a set distance from the APRIL tag
-                        Serial.print("The challenge is complete. The skrewt is defeated");
-                    }
+        case CEDRIC:{
+            if (romiNumber == 2) {
+                if (buttonA.getSingleDebouncedRelease()){
+                    robot_state = IDLE;
+                    DriveControl.Stop();
+                } if (tagCount != 0) { // When the camera doesn't view any tags of type 16h5
+                    Serial.println("I see a task is coming up");
 
-                } else if (dakota.id == harryTargetB) { // The second APRIL tag Harry sees - the cup at the end
-                    Serial.println("I see the cup coming up");
-                    Serial.println(dakota.w);
-                    Serial.println(dakota.h);
-                    if (wheelEncoders.UpdateEncoderCounts()) { // Drive directly over the platform, a set distance from the APRIL tag
-                        DriveControl.FollowAtDistance();
+                    if (tagCount != 0) {
+                        Serial.println("I see a skrewt");
+
+                        if (dakota.id == harryTargetA || dakota.id == cedricTargetA) // this is what we can use for harry and cedrics first tags
+                        { 
+                            Serial.println(" I am comming up on the challenge");
+                            Serial.println(dakota.w);
+                            Serial.println(dakota.h);
+
+                            if (wheelEncoders.UpdateEncoderCounts()) {
+                                DriveControl.FollowAtDistance();
+                            }
+                        } else if (dakota.id == cedricTargetB) {// This should be the one that can be used for the cup
+                            Serial.println("I see the cup coming up yay... wait a minute");
+                            Serial.println(dakota.w);
+                            Serial.println(dakota.h);
+                            if (wheelEncoders.UpdateEncoderCounts())  {
+                                DriveControl.FollowAtDistance();
+                            } else if (!wheelEncoders.UpdateEncoderCounts()) {
+                            drivetrain.setEfforts(50,-50);
+                            drivetrain.setEfforts(75,75); 
+                            Serial.println("AHHHHHHHHHH");
+                            }
+                        }
                     }
-                        //ADD THE 360 SPIN 
-                    Serial.println("Whooohooo"); // Harry wins
                 } else {
                     DriveControl.Run(150, 150);
-                        // reverse and turn
+                    // reverse and turn
                     if (DetectCollision()) {
                         DriveControl.Reverse(110, 50);
+                        DriveControl.Turn(30, 1);
                     }
-                    DriveControl.Turn(30, 1);
-                }    
-            }
-        }
-        break;
-    }
-
-    case CEDRIC:{
- // If the Romi used is HarryCedri      c  if (romiNumber == 2) {
-            if (buttonA.getSingleDebouncedRelease()){
-                robot_state = IDLE;
-                DriveControl.Stop();
-            }  if (tagCount != 0) { // When the camera doesn't view any tags of type 16h5
-        Serial.println("I see a task is coming up");
-
-        if (camera.readTag(dakota))
-        {
-            Serial.println("I see a skrewt");
-
-            if (dakota.id == harryTargetA || dakota.id == cedricTargetA) // this is what we can use for harry and cedrics first tags
-            { 
-                Serial.println(" I am comming up on the challenge");
-                Serial.println(dakota.w);
-                Serial.println(dakota.h);
-
-                if (wheelEncoders.UpdateEncoderCounts()) {
-                    DriveControl.FollowAtDistance();
+                    DriveControl.FollowAtDistance();    // this will adjust the romi position until target = curr size
+                    if (ComptagSize()) {                // see APRIL tag at certain distance - stop
+                        Stop();
+                    }
                 }
-                //break;
-            } 
-            else if (dakota.id == cedricTargetB) {// This should be the one that can be used for the cup
-                Serial.println("I see the cup coming up yay... wait a minute");
-                Serial.println(dakota.w);
-                Serial.println(dakota.h);
-                if (wheelEncoders.UpdateEncoderCounts())  {
-                    DriveControl.FollowAtDistance();
-                // break;
-                } else if (!wheelEncoders.UpdateEncoderCounts()) {
-                    drivetrain.setEfforts(50,-50);
-                    drivetrain.setEfforts(75,75); 
-                    Serial.println("AHHHHHHHHHH");
-                }
-            }
-        }
-    }
-            else {
-                // line follow to hit bum
-
-                // drive  
-                // miss first intersection
-                    // turn right at second intersection
-                    // drive
-                    // turn right at first intersection
-                    // drive
-                    // turn left at first intersection
-                    // drive
-                    // turn left at first intersection
-
-                // drive and hit bump switch
-                DriveControl.Run(150, 150);
-                // reverse and turn
-                if (DetectCollision()) {
-                    DriveControl.Reverse(110, 50);
-                }
-                DriveControl.Turn(30, 1);
-                // Aditri add code for driving with sensors
-
-                    // miss first intersection
-                    // turn left at second intersection
-                    // drive
-                    // turn left at first intersection
-                    // drive
-                    // turn right at first intersection
-                    // drive
-                    // turn right at first intersection
-                    // drive
-                DriveControl.FollowAtDistance();    // this will adjust the romi position until target = curr size
-                if (ComptagSize()) {                // see APRIL tag at certain distance - stop
-                    Stop();
-                }
-
-                        // wait for Harry to reach general location on map - start moving again
-                    // turn left to reach l
-
-//                   drive
-                    // turn left at first intersection
-                    // drive
-                    // miss first intersection
-                    // turn left at second intersection
-                    // drive certain distance until seeing APRIL tag at end
-                        // drive forward (forward kinematics)
-                        // turn left (forward kinematics)
-                        // drive off edge (forward kinematics)  en
-                 //ezam fo dne  dnehcaer dna  ,hctiws
-                // if () { // find APRIL tag - tangled in vines
-                //     PIcontroller.Stop(); // stuck in hedge
-                //     if () { // if Harry reaches certain location, Cedric moves forward in the maze
-                //         // follows lines to reach end of maze
-                //     }
-                // }
-                // if { // find APRIL tag - blast twi-wizard cup
-                //     // turn to left and drive off side with forward kinematics
-                // }
-                // if { // Harry has started moving
-                   
-                // }
             }
         break;
         }
     
 
-    // TODO: I think the entrance conditions into these cases need to be revised
-    // as it stands right now, the machine will check for the "KRUM" state
-    // as configured in the switch statement in the Init() function. It then
-    // checks AGAIN if the romiNumber is 3, which makes no sense because the
-    // robotState KRUM will only occure if and only if the romiNumber == KRUM (3).
-    // Addtitionally, the FLEUR state else case is placed incorrect
-    case KRUM:{
-        if (romiNumber == 3) { // If the Romi used is Krum
-            if (buttonA.getSingleDebouncedRelease()){
-                robot_state = IDLE;
-                DriveControl.Stop();
-            }  if (tagCount != 0) { // When the camera doesn't view any tags of type 16h5
-        Serial.println("I see a task is coming up");
-
-        if (camera.readTag(dakota))
-        {
-            Serial.println("I see a skrewt");
-
-
-            } if (dakota.id == fleurTarget || dakota.id == krumTarget) {    // This should be the one that fleur sees to edject her from the game
-
-                Serial.println(" I am comming up on the challenge");
-                Serial.println(dakota.w);
-                Serial.println(dakota.h);
-
-                if (wheelEncoders.UpdateEncoderCounts()) {
-                    while (true) {
-                        digitalWrite(PIN_A3, LOW);
-                        delay(200);
-                        digitalWrite(PIN_A3, HIGH);
-                        delay(200);
-                        digitalWrite(PIN_A3, LOW);
-                        delay(200);
-                        Serial.println("Bye Bye");
+        // TODO: I think the entrance conditions into these cases need to be revised
+        // as it stands right now, the machine will check for the "KRUM" state
+        // as configured in the switch statement in the Init() function. It then
+        // checks AGAIN if the romiNumber is 3, which makes no sense because the
+        // robotState KRUM will only occure if and only if the romiNumber == KRUM (3).
+        // Addtitionally, the FLEUR state else case is placed incorrect
+        case KRUM:{
+            if (romiNumber == 3) { // If the Romi used is Krum
+                if (buttonA.getSingleDebouncedRelease()){
+                    robot_state = IDLE;
+                    DriveControl.Stop();
+                } if (tagCount != 0) { // When the camera doesn't view any tags of type 16h5
+                    Serial.println("I see a task is coming up");
+                    if (tagCount != 0) {
+                        Serial.println("I see a skrewt");
+                    } if (dakota.id == fleurTarget || dakota.id == krumTarget) {    // This should be the one that fleur sees to edject her from the game
+                        Serial.println(" I am coming up on the challenge");
+                        Serial.println(dakota.w);
+                        Serial.println(dakota.h);
+                        if (wheelEncoders.UpdateEncoderCounts()) {
+                            while (true) {
+                                digitalWrite(PIN_A3, LOW);
+                                delay(200);
+                                digitalWrite(PIN_A3, HIGH);
+                                delay(200);
+                                digitalWrite(PIN_A3, LOW);
+                                delay(200);
+                                Serial.println("Bye Bye");
+                            }
+                            // Fleur moment
+                        }
                     }
-                    // break;
-            }
-        }
-    }
-} // reverse and turn
-                if (DetectCollision()) {
-                    DriveControl.Reverse(110, 50);
                 }
-            
-            break;
-    }
-        
-    case FLEUR:
-    {
-        if (romiNumber == 4) {
-            if (buttonA.getSingleDebouncedRelease()){
-                robot_state = IDLE;
-                DriveControl.Stop();
-             }  if (tagCount != 0) { // When the camera doesn't view any tags of type 16h5
-        Serial.println("I see a task is coming up");
-
-        if (camera.readTag(dakota))
-        {
-            Serial.println("I see a skrewt");
-            } if (dakota.id == fleurTarget || dakota.id == krumTarget) {    // This should be the one that fleur sees to edject her from the game
-
-                Serial.println(" I am comming up on the challenge");
-                Serial.println(dakota.w);
-                Serial.println(dakota.h);
-
-                if (wheelEncoders.UpdateEncoderCounts()) {
-                    while (true) {
-                        digitalWrite(PIN_A3, LOW);
-                        delay(200);
-                        digitalWrite(PIN_A3, HIGH);
-                        delay(200);
-                        digitalWrite(PIN_A3, LOW);
-                        delay(200);
-                        Serial.println("Bye Bye");
-                    }
-                    // break;
-            }
-                }
-            } else {
-            
-            //Fleur's path through the maze
-            //FOLLOWLINE//
-                DriveControl.LineFollow(); 
-                //line follow using Speed Controller/PID
-            //SEES FIRST DOUBLE WHITE// ignore
-                //move foward a little
-                //line follow using Speed Controller/PID
-            //SEES SECOND DOUBLE WHITE// right turn
-                //move foward a little
-                //turn right a little
-                //turn right until LR hit the white line
-                //line follow using Speed Controller/PID
-            //SEES THIRD DOUBLE WHITE// right turn
-                //move foward a little
-                //turn right a little
-                //turn right until LR hit the white line
-                //line follow using Speed Controller/PID
-            //SEES FOURTH DOUBLE WHITE//
-                //move foward a little
-                //turn left a little
-                //turn lift until RR hit the white line
-                //line follow using Speed Controller/PID
-            // SEES FIFTHDOUBLE WHITE//
-                //move foward a little
-                //turn left a little
-                //turn lift until RR hit the white line
-                //line follow using Speed Controller/PID
-            // HITS BUMP SWITCH//
-                // drive and hit bump switch
-            DriveControl.Run(150, 150);
-                // reverse and turn
+            } // reverse and turn
             if (DetectCollision()) {
                 DriveControl.Reverse(110, 50);
             }
-            DriveControl.Turn(30, 1);
-                //back up a little
-                //turns to left a little
-                //turn left until RR hit the white line
-            //SEES AN APRIL TAG//
-                //try to read it
-            //APRIL TAG ID is __
-                //line follow using Speed Controller/PID
-            //APRIL TAG IS __ IN AWAY//
+
+        break;
+        }
+
+        case FLEUR:
+        {
+            if (romiNumber == 4) {
+                if (buttonA.getSingleDebouncedRelease()){
+                    robot_state = IDLE;
+                    DriveControl.Stop();
+                 } if (tagCount != 0) { // When the camera doesn't view any tags of type 16h5
+                    Serial.println("I see a task is coming up");
+
+                    if (camera.readTag(dakota)) {
+                        Serial.println("I see a skrewt");
+
+                    } if (dakota.id == fleurTarget || dakota.id == krumTarget) {    // This should be the one that fleur sees to edject her from the game
+                        Serial.println(" I am comming up on the challenge");
+                        Serial.println(dakota.w);
+                        Serial.println(dakota.h);
+
+                        if (wheelEncoders.UpdateEncoderCounts()) {
+                            while (true) {
+                                digitalWrite(PIN_A3, LOW);
+                                delay(200);
+                                digitalWrite(PIN_A3, HIGH);
+                                delay(200);
+                                digitalWrite(PIN_A3, LOW);
+                                delay(200);
+                                Serial.println("Bye Bye");
+                            }
+                        // Krum moment
+                        }
+                    }
+                }
+            } else {
+                DriveControl.LineFollow(); 
+
+                if (DetectCollision()) {
+                    DriveControl.Reverse(110, 50);
+                    DriveControl.Turn(30, 1);
+                }
             }
-            break;
+        break;
+        }
+    }
+}
 
-
-//sam code
-}}                                                                                                          }}
-
-
-
+//sam code, to be inserted into the state machine
 void Behaviors::NoState(void) {
     drivetrain.setEfforts(0, 0);
     Serial.println("Searching");
