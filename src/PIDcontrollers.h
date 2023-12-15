@@ -18,7 +18,7 @@ class PIDcontrollers{
         float constant = 0.01;
         float difference;
         int divisor = 120;
-        int lineSensingThresh = 250;
+        
 
         float E_left; 
         float E_right;
@@ -29,6 +29,8 @@ class PIDcontrollers{
         uint16_t targetArea = 1089; //33 pixels by 33 pixels
 
     public:
+        const int lineSensingThresh = 250;
+        
         const int leftReflectance = 20;   // Left Analog Input Pin
         const int rightReflectance = 22;  // Right Analog Input Pin
 

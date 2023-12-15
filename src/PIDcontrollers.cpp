@@ -124,7 +124,7 @@ void PIDcontrollers::LineFollow()
     Serial.println(analogRead(leftReflectance));
     Serial.println("Right: ");
     Serial.println(analogRead(rightReflectance));
-    motors.setEfforts(u_left + 50.0,u_right + 50.0);
+    motors.setEfforts(u_left + 50.0, u_right + 50.0);
 }
 
 void PIDcontrollers::TurnTillLine(String direction)

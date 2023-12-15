@@ -76,6 +76,28 @@ void Behaviors::Init(void)
     }
 }
 
+int Behaviors::getLeftValue(void) {
+    int leftSensVal = analogRead(5);
+    return leftSensVal;
+}
+
+int Behaviors::getRightValue(void) {
+    int rightSensVal = analogRead(12);
+    return rightSensVal;
+}
+
+void Behaviors::handleIntersection() {
+    int timer = millis();
+    if (millis() <= timer + driveInterval) {
+        DriveControl.Run(40, 40);
+        machine = true;
+    } else if (machine) {
+        machine = false;
+        DriveControl.Turn(90, false);
+    }
+    
+}
+
 boolean Behaviors::DetectCollision(void)
 {
     auto data_acc = leyte.ReadAcceleration();
@@ -144,49 +166,106 @@ void Behaviors::Run(void) {
 
         }
         case HARRY:{
-            if (romiNumber == 1) { // If the Romi used is 
+            switch (harryState) {
+            
+            case IDLEH:
                 if (buttonA.getSingleDebouncedRelease()) {
-                    robot_state = IDLE;
-                    DriveControl.Stop(); // When the camera doesn't view any tags of type 16h5;
-                } else if (tagCount != 0) {
-                
-                    Serial.println("I see a task is coming up");
-                    if (camera.getTagCount() != 0)
-                    {
-                        Serial.println("I see a skrewt");
-                        if (dakota.id == harryTargetA || dakota.id == cedricTargetA) // when cedric or harry view their assigned APRIL tag
-                        { 
-                            Serial.println(" I am comming up on the challenge");
-                            Serial.println(dakota.w); 
-                            Serial.println(dakota.h);
-
-                        } else if (wheelEncoders.UpdateEncoderCounts()) {
-                            DriveControl.FollowAtDistance(); // Align themselves at a set distance from the APRIL tag
-                            Serial.print("The challenge is complete. The skrewt is defeated");
-                        }
-
-                    } else if (dakota.id == harryTargetB) { // The second APRIL tag Harry sees - the cup at the end
-                        Serial.println("I see the cup coming up");
-                        Serial.println(dakota.w);
-                        Serial.println(dakota.h);
-                        if (wheelEncoders.UpdateEncoderCounts()) { // Drive directly over the platform, a set distance from the APRIL tag
-                            DriveControl.FollowAtDistance();
-                        }
-                            //ADD THE 360 SPIN 
-                        Serial.println("Whooohooo"); // Harry wins
-                    } else {
-                        DriveControl.Run(150, 150);
-                            // reverse and turn
-                        if (DetectCollision()) {
-                            DriveControl.Reverse(110, 50);
-                        }
-                        DriveControl.Turn(30, 1);
-                    }    
+                    harryState = prevHarryState;
+                } else {
+                    harryState = IDLEH;
+                    DriveControl.Stop();
                 }
-            }
             break;
+            
+            case LINEFOLLOW:
+                if (buttonA.getSingleDebouncedRelease()) {
+                    prevHarryState = harryState;
+                    harryState = IDLEH;
+                }
+                // separate "if" statement for syntax purposes.
+                DriveControl.LineFollow();
+                
+                //condition 1: harry identifities the correct tag.
+                if (camera.getTagCount() != 0 && (dakota.id == harryTargetA || dakota.id == cedricTargetA)) {
+                    harryState = SEEAPRILTAG;
+                    Serial.println("I see a skrewt");
+                    Serial.println("I must be coming up on the challenge :)");  
+                } else if (getLeftValue() >= thresh && getRightValue() >= thresh) {
+                    harryState = HANDLEINT;
+                }
+            break;
+
+            case SEEAPRILTAG:
+                DriveControl.FollowAtDistance();
+                if (!wheelEncoders.UpdateEncoderCounts() && (dakota.id == harryTargetA || dakota.id == cedricTargetA)) {
+                    Serial.print("The challenge is complete. The skrewt is defeated");
+                    harryState = TURN;
+                } else if (!wheelEncoders.UpdateEncoderCounts() && (dakota.id == harryTargetB || dakota.id == cedricTargetB)) {
+                    Serial.println("I see the cup coming up");
+                    delay (200);
+                    Serial.println("Whooohooo"); // Harry wins
+                }
+            break;
+
+            case HANDLEINT:
+                handleIntersection();
+                harryState = LINEFOLLOW;
+            break;
+
+            case TURN:
+                DriveControl.Turn(30, 1);
+                //DriveControl.TurnTillLine();
+                harryState = LINEFOLLOW;
+            break;
+
+            default:    // default state is linefollowing
+                harryState = LINEFOLLOW;
+            break;
+            }
+        break;
         }
 
+
+
+
+        //     if (romiNumber == 1) { // If the Romi used is harry
+        //     Serial.println("I see a task is coming up");
+
+        //         if (buttonA.getSingleDebouncedRelease()) {
+        //             robot_state = IDLE;
+        //             DriveControl.Stop(); // When the camera doesn't view any tags of type 16h5;
+        //         }
+        //         if (camera.getTagCount() != 0 && (dakota.id == harryTargetA || dakota.id == cedricTargetA))
+        //         {
+                                         
+                       
+        //             if (wheelEncoders.UpdateEncoderCounts()) {
+        //                 DriveControl.FollowAtDistance(); // Align themselves at a set distance from the APRIL tag
+                        
+        //             } else if (dakota.id == harryTargetB) { // The second APRIL tag Harry sees - the cup at the end
+                        
+        //                 // Serial.println(dakota.w);
+        //                 // Serial.println(dakota.h);
+                        
+        //                 if (wheelEncoders.UpdateEncoderCounts()) { // Drive directly over the platform, a set distance from the APRIL tag
+        //                     DriveControl.FollowAtDistance();
+        //                 }
+        //                 //ADD THE 360 SPIN 
+                    
+        //             }
+                
+        //         } else {
+        //             DriveControl.Run(150, 150);
+        //                 // reverse and turn
+        //             if (DetectCollision()) {
+        //                 DriveControl.Reverse(110, 50);
+        //                 DriveControl.Turn(30, 1);
+        //             }
+        //         }
+        //     }
+        // break;
+        // }
+//_______________________________________________________________________________________ ignore below :(2-*
         case CEDRIC:{
             if (romiNumber == 2) {
                 if (buttonA.getSingleDebouncedRelease()){

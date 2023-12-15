@@ -13,7 +13,10 @@ class Behaviors{
         int data[3] = {0};
         enum ROBOT_STATE {IDLE, HARRY, CEDRIC, KRUM, FLEUR};    //DRIVE, REVERSE, TURN
         ROBOT_STATE robot_state = IDLE; //initial state: IDLE
-        ROBOT_STATE romiNumber = CEDRIC;
+        ROBOT_STATE romiNumber = HARRY;
+        enum HARRYSTATE {IDLEH, SEEAPRILTAG, LINEFOLLOW, HANDLEINT, TURN};
+        HARRYSTATE harryState = IDLEH;
+        HARRYSTATE prevHarryState = IDLEH;
         int targetTagSize = 4400;  // adjust this value to be the area of the apriltag in pixels at the desired distance.
         int tagCount;
         const float Kp = 1.35; //Adapt the parameters until your robot moves at the speed you command it to drive //1.35
@@ -21,6 +24,9 @@ class Behaviors{
         const float Kpd = 0.035; //0.1 //0.05
         float E_left; 
         float E_right;
+        const unsigned int driveInterval = 50;   //ms
+        const int thresh = 250;
+        bool machine = false;
         
         // AprilTags to be identified in sequence
         const unsigned int harryTargetA = 0;
@@ -38,6 +44,10 @@ class Behaviors{
         boolean DetectCollision(void);
         boolean DetectBeingPickedUp(void);
         boolean ComptagSize(void);
+        
+        int getLeftValue();
+        int getRightValue();
+        void handleIntersection();
 };
 
 #endif
