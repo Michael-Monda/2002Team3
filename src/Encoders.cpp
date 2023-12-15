@@ -10,6 +10,7 @@ uint32_t lastUpdate = 0;
 
 Romi32U4Encoders encoders;
 
+
 void Encoder::Init(void)
 {
     //nothing to initialize, however, good practice to have a init function anyway

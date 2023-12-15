@@ -15,13 +15,15 @@
 #include "openmv.h"
 #include "apriltagdatum.h"
 
+
 //sensors
 IMU_sensor leyte;       // I like to give them names because I think it's easier to associate them with their functions.
 IRsensor ranger;
 SonarSensor hornet;
 AprilTagDatum dakota;
-AprilTagDatum wallTag;
 OpenMV camera;
+int leftReflectance = 20;   
+int rightReflectance = 22;  
 
 Romi32U4ButtonA buttonA;
 
@@ -141,7 +143,7 @@ void Behaviors::Run(void) {
     break;
 
     }
-     case HARRY:{
+    case HARRY:{
         if (romiNumber == 1) { // If the Romi used is 
             if (buttonA.getSingleDebouncedRelease()) {
                 robot_state = IDLE;
@@ -149,7 +151,7 @@ void Behaviors::Run(void) {
             } else if (tagCount != 0) {
         
                 Serial.println("I see a task is coming up");
-                if (camera.readTag(dakota))
+                if (camera.getTagCount() != 0)
                 {
                     Serial.println("I see a skrewt");
                     if (dakota.id == harryTargetA || dakota.id == cedricTargetA) // when cedric or harry view their assigned APRIL tag
@@ -159,56 +161,31 @@ void Behaviors::Run(void) {
                         Serial.println(dakota.h);
 
                     } else if (wheelEncoders.UpdateEncoderCounts()) {
-                            DriveControl.FollowAtDistance(); // Align themselves at a set distance from the APRIL tag
-                    Serial.print("The challenge is complete. The skrewt is defeated");
-                        }
-                        //break;
-                    } else if (dakota.id == harryTargetB) { // The second APRIL tag Harry sees - the cup at the end
-                        Serial.println("I see the cup coming up");
-                        Serial.println(dakota.w);
-                        Serial.println(dakota.h);
-                        if (wheelEncoders.UpdateEncoderCounts()) { // Drive directly over the platform, a set distance from the APRIL tag
-                            DriveControl.FollowAtDistance();
-                        }
-                            //ADD THE 360 SPIN 
-                        Serial.println("Whooohooo"); // Harry wins
-                            // break;
-                    } else {
-                        //line follow
-                        //go straight two blocks (past one cross section)
-                        //turn right
-                        // go straight to nect cross section
-                        //turn right
-                        //go straight
-                        //turn left
-                        //go straight to next cross section
-                        //turn left to buzzer
-                        // drive and hit bump switch
-                        DriveControl.Run(150, 150);
+                        DriveControl.FollowAtDistance(); // Align themselves at a set distance from the APRIL tag
+                        Serial.print("The challenge is complete. The skrewt is defeated");
+                    }
+
+                } else if (dakota.id == harryTargetB) { // The second APRIL tag Harry sees - the cup at the end
+                    Serial.println("I see the cup coming up");
+                    Serial.println(dakota.w);
+                    Serial.println(dakota.h);
+                    if (wheelEncoders.UpdateEncoderCounts()) { // Drive directly over the platform, a set distance from the APRIL tag
+                        DriveControl.FollowAtDistance();
+                    }
+                        //ADD THE 360 SPIN 
+                    Serial.println("Whooohooo"); // Harry wins
+                } else {
+                    DriveControl.Run(150, 150);
                         // reverse and turn
-                        if (DetectCollision()) {
-                            DriveControl.Reverse(110, 50);
-                        }
-                        DriveControl.Turn(30, 1);
-                        // go foward to next cross sections
-                        //turn left
-                        //go to next cross section
-                        //turn left
-                        // go to next cross section
-                        //turn right
-                        //see april tag
-                        // reverse 10cm then sense krum turn 90 degres to the right and collide with krum then turn around find line and go back to line following
-                        //turn right
-                        //go to cross section
-                        //turn left
-                        // go through one cross section to the next one
-                        //turn left
-                        //go up ramp and stop like five cm away from april tag
-                        // seepril tag and do a spin
-                    }    
-                }
-                break;
-                }
+                    if (DetectCollision()) {
+                        DriveControl.Reverse(110, 50);
+                    }
+                    DriveControl.Turn(30, 1);
+                }    
+            }
+        }
+        break;
+    }
 
     case CEDRIC:{
  // If the Romi used is HarryCedri      c  if (romiNumber == 2) {
@@ -357,9 +334,9 @@ void Behaviors::Run(void) {
                 if (DetectCollision()) {
                     DriveControl.Reverse(110, 50);
                 }
-            }
+            
             break;
-        }
+    }
         
     case FLEUR:
     {
@@ -442,7 +419,7 @@ void Behaviors::Run(void) {
 
 
 //sam code
-}}}}
+}}                                                                                                          }}
 
 
 

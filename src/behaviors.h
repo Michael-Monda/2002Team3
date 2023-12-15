@@ -1,6 +1,5 @@
 #ifndef BEHAVIORS
 #define BEHAVIORS
-
 #include <Romi32U4.h>
 
 // TODO: add a new variable which represents a collision threshold in the y-direction.
@@ -14,7 +13,7 @@ class Behaviors{
         int data[3] = {0};
         enum ROBOT_STATE {IDLE, HARRY, CEDRIC, KRUM, FLEUR};    //DRIVE, REVERSE, TURN
         ROBOT_STATE robot_state = IDLE; //initial state: IDLE
-        ROBOT_STATE romiNumber = IDLE;
+        ROBOT_STATE romiNumber = CEDRIC;
         int targetTagSize = 4400;  // adjust this value to be the area of the apriltag in pixels at the desired distance.
         int tagCount;
         const float Kp = 1.35; //Adapt the parameters until your robot moves at the speed you command it to drive //1.35
