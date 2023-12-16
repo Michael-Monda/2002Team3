@@ -26,6 +26,7 @@ int leftReflectance = 20;
 int rightReflectance = 22;  
 
 Romi32U4ButtonA buttonA;
+Romi32U4ButtonB buttonB;
 
 // complext data-type median filter
 Algorithm gyro_x_stab;  // this object used to find the median x acceleration of the romi over a given interval.
@@ -171,6 +172,8 @@ void Behaviors::Run(void) {
             case IDLEH:
                 if (buttonA.getSingleDebouncedRelease()) {
                     harryState = prevHarryState;
+                } else if (buttonB.getSingleDebouncedRelease()) {
+                    harryState = LINEFOLLOW;
                 } else {
                     harryState = IDLEH;
                     DriveControl.Stop();
